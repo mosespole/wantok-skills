@@ -9,7 +9,7 @@ Wantok Skills is an Android marketplace app that connects people in Papua New Gu
 | **Student name**   | `[YOUR FULL NAME]`                                         |
 | **Student number** | `[YOUR STUDENT NUMBER]`                                    |
 | **Course**         | IS325 Mobile App Development, PNG University of Technology |
-| **Repository**     | `[GITHUB REPOSITORY URL]`                                  |
+| **Repository**     | <https://github.com/mosespole/wantok-skills>               |
 
 ---
 
@@ -52,8 +52,8 @@ Wantok Skills is an Android marketplace app that connects people in Papua New Gu
 ### Steps
 
 ```bash
-git clone [GITHUB REPOSITORY URL]
-cd WantokSkills
+git clone https://github.com/mosespole/wantok-skills.git
+cd wantok-skills
 npm install
 ```
 
