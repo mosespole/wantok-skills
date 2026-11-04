@@ -1,10 +1,7 @@
 import {
-  average,
   collection,
-  count,
   deleteDoc,
   doc,
-  getAggregateFromServer,
   getDoc,
   getDocs,
   query,
@@ -53,17 +50,20 @@ export async function getProviderReviews(providerId: string): Promise<Review[]> 
     .sort((a, b) => (b.updatedAt?.getTime() ?? 0) - (a.updatedAt?.getTime() ?? 0));
 }
 
+/** Average stars and review count, worked out from a list of reviews. */
+export function summariseRatings(reviews: Pick<Review, 'rating'>[]): RatingSummary {
+  if (reviews.length === 0) return { average: null, count: 0 };
+  const total = reviews.reduce((sum, review) => sum + review.rating, 0);
+  return { average: total / reviews.length, count: reviews.length };
+}
+
 /**
- * Average rating and review count, calculated by Firestore's aggregation query
- * (billed as one read per 1,000 reviews instead of downloading every review).
+ * Average rating and review count for a provider. Calculated in the app from the
+ * provider's reviews: Firestore's server-side average() with a providerId filter
+ * would need an extra composite index, and providers have few reviews.
  */
 export async function getRatingSummary(providerId: string): Promise<RatingSummary> {
-  const snapshot = await getAggregateFromServer(
-    query(reviewsCollection, where('providerId', '==', providerId)),
-    { averageRating: average('rating'), reviewCount: count() },
-  );
-  const { averageRating, reviewCount } = snapshot.data();
-  return { average: reviewCount > 0 ? averageRating : null, count: reviewCount };
+  return summariseRatings(await getProviderReviews(providerId));
 }
 
 /** The signed-in customer's review of this provider, if they have written one. */
