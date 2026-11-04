@@ -4,6 +4,7 @@ import { EmptyState, ErrorState, LoadingState, Screen } from '@/components/commo
 import { ServiceForm } from '@/components/forms/ServiceForm';
 import type { CategoryId } from '@/constants/categories';
 import { useAuth } from '@/hooks/useAuth';
+import { useServiceImage } from '@/hooks/useServiceImage';
 import { useService, useUpdateService } from '@/hooks/useServices';
 import { getErrorMessage } from '@/utils/errors';
 import { toServiceInput } from '@/utils/validation';
@@ -13,6 +14,7 @@ export default function EditServiceScreen() {
   const { user } = useAuth();
   const serviceQuery = useService(id ?? '');
   const updateService = useUpdateService();
+  const serviceImage = useServiceImage();
 
   const listing = serviceQuery.data;
 
@@ -43,6 +45,8 @@ export default function EditServiceScreen() {
       <ServiceForm
         submitLabel="Save changes"
         showActiveToggle
+        currentImageUrl={listing.imageUrl}
+        uploadProgress={serviceImage.uploadProgress}
         defaultValues={{
           title: listing.title,
           category: listing.category as CategoryId,
@@ -54,11 +58,17 @@ export default function EditServiceScreen() {
           latitude: listing.latitude,
           longitude: listing.longitude,
         }}
-        onSubmit={async (values) => {
+        onSubmit={async (values, imageChange) => {
+          const { imageUrl, replacedUrl } = await serviceImage.resolveImageUrl(
+            imageChange,
+            listing.imageUrl,
+          );
           await updateService.mutateAsync({
             serviceId: listing.serviceId,
-            input: toServiceInput(values, listing.imageUrl),
+            input: toServiceInput(values, imageUrl),
           });
+          // Only now that the listing points at the new photo is the old one removed.
+          await serviceImage.cleanUp(replacedUrl);
           router.back();
         }}
       />

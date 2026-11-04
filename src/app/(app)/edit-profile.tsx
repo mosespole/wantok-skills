@@ -9,6 +9,7 @@ import { CategoryPicker } from '@/components/forms/CategoryPicker';
 import { FormError } from '@/components/forms/FormError';
 import { FormInput } from '@/components/forms/FormInput';
 import { LocationField } from '@/components/forms/LocationField';
+import { ProfilePhotoEditor } from '@/components/forms/ProfilePhotoEditor';
 import { useAuth } from '@/hooks/useAuth';
 import { useUpdateProfile } from '@/hooks/useUpdateProfile';
 import { spacing } from '@/theme';
@@ -68,6 +69,9 @@ export default function EditProfileScreen() {
 
   return (
     <Screen edges={['bottom']}>
+      {/* The photo uploads and saves on its own, separately from the form below. */}
+      <ProfilePhotoEditor name={profile.fullName} currentUrl={profile.profileImageUrl} />
+
       <FormError message={submitError} />
 
       <FormInput
