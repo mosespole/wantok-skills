@@ -36,14 +36,14 @@ The role is chosen at registration and cannot be changed afterwards (enforced in
 
 **Should-have**
 
-| #   | User story                                                                                                                 | Status                                                |
-| --- | -------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
-| S1  | As a **customer**, I want to save providers as favourites, so that I can find them again later.                            | Implemented                                           |
-| S2  | As a **provider**, I want a dashboard showing my active and paused listings, so that I can manage my business at a glance. | Implemented                                           |
-| S3  | As a **provider**, I want to edit my profile (skill, bio, location), so that customers know more about me.                 | Implemented                                           |
-| S4  | As a **provider**, I want to pause a listing without deleting it, so that I can stop enquiries temporarily.                | Implemented                                           |
-| S5  | As a **customer**, I want to see services near me on the Home screen, so that I find local help first.                     | Implemented                                           |
-| S6  | As a **customer**, I want to see previously loaded listings when I am offline, so that poor connectivity does not stop me. | `[UPDATE: Implemented / Partially / Not implemented]` |
+| #   | User story                                                                                                                 | Status                                                                             |
+| --- | -------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| S1  | As a **customer**, I want to save providers as favourites, so that I can find them again later.                            | Implemented                                                                        |
+| S2  | As a **provider**, I want a dashboard showing my active and paused listings, so that I can manage my business at a glance. | Implemented                                                                        |
+| S3  | As a **provider**, I want to edit my profile (skill, bio, location), so that customers know more about me.                 | Implemented                                                                        |
+| S4  | As a **provider**, I want to pause a listing without deleting it, so that I can stop enquiries temporarily.                | Implemented                                                                        |
+| S5  | As a **customer**, I want to see services near me on the Home screen, so that I find local help first.                     | Implemented                                                                        |
+| S6  | As a **customer**, I want to see previously loaded listings when I am offline, so that poor connectivity does not stop me. | Partially: latest listings and own profile cached; details pages need a connection |
 
 **Could-have**
 

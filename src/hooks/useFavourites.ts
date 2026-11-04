@@ -7,6 +7,7 @@ import {
   getFavourites,
   removeFavourite,
 } from '@/services/firebase/favouriteService';
+import { ensureOnline } from '@/services/network/networkService';
 import type { Favourite } from '@/types/favourite';
 
 import { useAuth } from './useAuth';
@@ -35,8 +36,10 @@ export function useFavourites() {
   );
 
   const toggleMutation = useMutation({
-    mutationFn: ({ providerId, save }: { providerId: string; save: boolean }) =>
-      save ? addFavourite(uid, providerId) : removeFavourite(uid, providerId),
+    mutationFn: async ({ providerId, save }: { providerId: string; save: boolean }) => {
+      await ensureOnline();
+      return save ? addFavourite(uid, providerId) : removeFavourite(uid, providerId);
+    },
 
     // Optimistic update: flip the heart immediately, roll back if Firestore rejects it.
     onMutate: async ({ providerId, save }) => {

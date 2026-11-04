@@ -3,12 +3,13 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   createService,
   deleteService,
-  getActiveServices,
   getActiveServicesByProvider,
   getMyServices,
   getServiceById,
   updateService,
 } from '@/services/firebase/serviceService';
+import { fetchActiveServicesWithFallback } from '@/services/cache/activeServicesCache';
+import { ensureOnline } from '@/services/network/networkService';
 import type { ServiceInput } from '@/types/service';
 
 import { useAuth } from './useAuth';
@@ -22,8 +23,12 @@ export const serviceKeys = {
   detail: (serviceId: string) => [...serviceKeys.all, 'detail', serviceId] as const,
 };
 
+/**
+ * Active marketplace listings. Falls back to the copy saved in AsyncStorage when
+ * offline; `data.source` says whether the listings are live or saved.
+ */
 export function useActiveServices() {
-  return useQuery({ queryKey: serviceKeys.active(), queryFn: getActiveServices });
+  return useQuery({ queryKey: serviceKeys.active(), queryFn: fetchActiveServicesWithFallback });
 }
 
 export function useMyServices() {
@@ -56,8 +61,9 @@ export function useCreateService() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (input: ServiceInput) => {
+    mutationFn: async (input: ServiceInput) => {
       if (!user) throw new Error('You must be logged in to create a listing.');
+      await ensureOnline();
       return createService(user.uid, input);
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: serviceKeys.all }),
@@ -67,8 +73,16 @@ export function useCreateService() {
 export function useUpdateService() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ serviceId, input }: { serviceId: string; input: Partial<ServiceInput> }) =>
-      updateService(serviceId, input),
+    mutationFn: async ({
+      serviceId,
+      input,
+    }: {
+      serviceId: string;
+      input: Partial<ServiceInput>;
+    }) => {
+      await ensureOnline();
+      return updateService(serviceId, input);
+    },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: serviceKeys.all }),
   });
 }
@@ -76,8 +90,10 @@ export function useUpdateService() {
 export function useDeleteService() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ serviceId, imageUrl }: { serviceId: string; imageUrl: string | null }) =>
-      deleteService(serviceId, imageUrl),
+    mutationFn: async ({ serviceId, imageUrl }: { serviceId: string; imageUrl: string | null }) => {
+      await ensureOnline();
+      return deleteService(serviceId, imageUrl);
+    },
     onSuccess: (_result, { serviceId }) => {
       queryClient.removeQueries({ queryKey: serviceKeys.detail(serviceId) });
       return queryClient.invalidateQueries({ queryKey: serviceKeys.all });

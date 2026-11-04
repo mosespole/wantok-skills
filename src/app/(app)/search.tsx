@@ -5,6 +5,7 @@ import { StyleSheet, TextInput, View } from 'react-native';
 
 import { AppText } from '@/components/common';
 import { CategoryChips } from '@/components/common/CategoryChips';
+import { DataStatusNotice } from '@/components/common/DataStatusNotice';
 import { SearchBar } from '@/components/common/SearchBar';
 import { ServiceList } from '@/components/common/ServiceList';
 import { useActiveServices } from '@/hooks/useServices';
@@ -24,7 +25,7 @@ export default function SearchScreen() {
   const deferredText = useDeferredValue(text);
   const deferredLocation = useDeferredValue(location);
 
-  const results = filterServices(servicesQuery.data ?? [], {
+  const results = filterServices(servicesQuery.data?.services ?? [], {
     text: deferredText,
     location: deferredLocation,
     category,
@@ -34,6 +35,11 @@ export default function SearchScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.filters}>
+        <DataStatusNotice
+          source={servicesQuery.data?.source}
+          updatedAt={servicesQuery.data?.updatedAt}
+          onRetry={() => servicesQuery.refetch()}
+        />
         <SearchBar
           value={text}
           onChangeText={setText}

@@ -5,6 +5,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AppButton, AppText, Avatar, Card, ErrorState, LoadingState } from '@/components/common';
+import { DataStatusNotice } from '@/components/common/DataStatusNotice';
 import { ProviderMap, type ProviderMapHandle } from '@/components/map/ProviderMap';
 import { getCategoryLabel } from '@/constants/categories';
 import { useCurrentLocation } from '@/hooks/useLocation';
@@ -25,7 +26,7 @@ export default function MapScreen() {
   const { requestLocation } = location;
   const [selected, setSelected] = useState<ProviderPin | null>(null);
 
-  const pins = buildProviderPins(servicesQuery.data ?? []);
+  const pins = buildProviderPins(servicesQuery.data?.services ?? []);
 
   // Ask for location when the map opens (the moment it is actually needed).
   useEffect(() => {
@@ -82,6 +83,11 @@ export default function MapScreen() {
       />
 
       <SafeAreaView edges={['top']} style={styles.topOverlay} pointerEvents="box-none">
+        <DataStatusNotice
+          source={servicesQuery.data?.source}
+          updatedAt={servicesQuery.data?.updatedAt}
+          onRetry={() => servicesQuery.refetch()}
+        />
         <Card style={styles.statusCard}>
           <AppText variant="bodyStrong">
             {pins.length} {pins.length === 1 ? 'provider' : 'providers'} on the map
@@ -191,7 +197,14 @@ export default function MapScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   flex: { flex: 1 },
-  topOverlay: { position: 'absolute', top: 0, left: 0, right: 0, padding: spacing.lg },
+  topOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    padding: spacing.lg,
+    gap: spacing.sm,
+  },
   statusCard: { gap: spacing.xs, padding: spacing.md },
   locationWarning: { gap: spacing.xs },
   fabColumn: {

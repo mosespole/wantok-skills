@@ -12,6 +12,7 @@ import {
   Screen,
   SectionHeader,
 } from '@/components/common';
+import { DataStatusNotice } from '@/components/common/DataStatusNotice';
 import { SearchBar } from '@/components/common/SearchBar';
 import { APP_TAGLINE } from '@/constants/app';
 import { CATEGORIES } from '@/constants/categories';
@@ -43,7 +44,7 @@ export function CustomerHome() {
   const servicesQuery = useActiveServices();
   const location = useCurrentLocation();
 
-  const services = servicesQuery.data ?? [];
+  const services = servicesQuery.data?.services ?? [];
   const recent = services.slice(0, SECTION_SIZE);
   const featured = [...services]
     .filter((service) => completenessScore(service) > 0)
@@ -82,6 +83,12 @@ export function CustomerHome() {
         </View>
         <Avatar name={profile?.fullName ?? ''} imageUrl={profile?.profileImageUrl} size={44} />
       </View>
+
+      <DataStatusNotice
+        source={servicesQuery.data?.source}
+        updatedAt={servicesQuery.data?.updatedAt}
+        onRetry={() => servicesQuery.refetch()}
+      />
 
       <SearchBar onPress={() => router.push('/search')} />
 

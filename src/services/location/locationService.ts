@@ -1,5 +1,7 @@
 import * as Location from 'expo-location';
 
+import { withTimeout } from '@/utils/async';
+
 export interface Coordinates {
   latitude: number;
   longitude: number;
@@ -17,22 +19,6 @@ export type LocationResult =
 
 const CURRENT_POSITION_TIMEOUT_MS = 15_000;
 const LAST_KNOWN_MAX_AGE_MS = 5 * 60_000;
-
-function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
-  return new Promise((resolve, reject) => {
-    const timer = setTimeout(() => reject(new Error('Timed out')), ms);
-    promise.then(
-      (value) => {
-        clearTimeout(timer);
-        resolve(value);
-      },
-      (error: unknown) => {
-        clearTimeout(timer);
-        reject(error);
-      },
-    );
-  });
-}
 
 /** Asks for foreground permission (only if needed) and returns the real device coordinates. */
 export async function getCurrentCoordinates(): Promise<LocationResult> {
@@ -55,6 +41,7 @@ export async function getCurrentCoordinates(): Promise<LocationResult> {
       (await withTimeout(
         Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced }),
         CURRENT_POSITION_TIMEOUT_MS,
+        'Timed out waiting for a GPS fix',
       ));
 
     return {

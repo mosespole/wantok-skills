@@ -9,8 +9,14 @@ import {
   subscribeToAuthChanges,
   type RegisterInput,
 } from '@/services/firebase/authService';
+import {
+  clearCachedProfile,
+  loadCachedProfile,
+  saveCachedProfile,
+} from '@/services/cache/profileCache';
 import { getUserProfile } from '@/services/firebase/userService';
 import type { UserProfile } from '@/types/user';
+import { withTimeout } from '@/utils/async';
 import { getErrorMessage } from '@/utils/errors';
 
 /**
@@ -41,6 +47,8 @@ export interface AuthContextValue extends AuthState {
 
 export const AuthContext = createContext<AuthContextValue | null>(null);
 
+const PROFILE_TIMEOUT_MS = 15_000;
+
 const initialState: AuthState = {
   status: 'loading',
   user: null,
@@ -60,8 +68,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const loadProfile = useCallback(async (user: User) => {
     try {
-      const profile = await getUserProfile(user.uid);
+      const profile = await withTimeout(
+        getUserProfile(user.uid),
+        PROFILE_TIMEOUT_MS,
+        'Loading your account took too long. Check your connection and try again.',
+      );
       if (currentUid.current !== user.uid) return;
+      if (profile) void saveCachedProfile(profile);
       setState(
         profile
           ? { status: 'signedIn', user, profile, errorMessage: null }
@@ -73,8 +86,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             },
       );
     } catch (error) {
+      // Offline or slow: open the app with the profile saved on this phone, if there is one.
+      const cached = await loadCachedProfile(user.uid);
       if (currentUid.current !== user.uid) return;
-      setState({ status: 'error', user, profile: null, errorMessage: getErrorMessage(error) });
+      setState(
+        cached
+          ? { status: 'signedIn', user, profile: cached, errorMessage: null }
+          : { status: 'error', user, profile: null, errorMessage: getErrorMessage(error) },
+      );
     } finally {
       setInitialized(true);
     }
@@ -101,6 +120,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isRegistering.current = true;
     try {
       const { user, profile } = await registerUser(input);
+      void saveCachedProfile(profile);
       setState({ status: 'signedIn', user, profile, errorMessage: null });
     } finally {
       isRegistering.current = false;
@@ -111,7 +131,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await loginUser(email, password);
   }, []);
 
-  const logout = useCallback(() => logoutUser(), []);
+  const logout = useCallback(async () => {
+    const uid = currentUid.current;
+    await logoutUser();
+    if (uid) await clearCachedProfile(uid);
+  }, []);
 
   const resetPassword = useCallback((email: string) => sendPasswordReset(email), []);
 
@@ -128,6 +152,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Refresh after an edit: keep the user signed in; let the caller handle failures.
     const profile = await getUserProfile(user.uid);
     if (profile && currentUid.current === user.uid) {
+      void saveCachedProfile(profile);
       setState((previous) => ({ ...previous, profile }));
     }
   }, [user, status, loadProfile]);
