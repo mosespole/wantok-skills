@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AppText } from '@/components/common';
 import { CategoryChips } from '@/components/common/CategoryChips';
+import { DataStatusNotice } from '@/components/common/DataStatusNotice';
 import { SearchBar } from '@/components/common/SearchBar';
 import { ServiceList } from '@/components/common/ServiceList';
 import { getCategoryLabel } from '@/constants/categories';
@@ -25,13 +26,18 @@ export default function ExploreScreen() {
     setCategory(params.category);
   }
 
-  const services = filterServices(servicesQuery.data ?? [], { category });
+  const services = filterServices(servicesQuery.data?.services ?? [], { category });
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
         <AppText variant="title">Explore services</AppText>
         <SearchBar onPress={() => router.push({ pathname: '/search', params: { category } })} />
+        <DataStatusNotice
+          source={servicesQuery.data?.source}
+          updatedAt={servicesQuery.data?.updatedAt}
+          onRetry={() => servicesQuery.refetch()}
+        />
       </View>
       <View style={styles.chips}>
         <CategoryChips value={category} onChange={setCategory} />

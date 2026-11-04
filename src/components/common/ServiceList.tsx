@@ -1,8 +1,10 @@
 import type { ReactElement } from 'react';
 import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
 
-import { ServiceCard } from '@/components/cards/ServiceCard';
 import type { UseQueryResult } from '@tanstack/react-query';
+
+import { ServiceCard } from '@/components/cards/ServiceCard';
+import type { ActiveServicesResult } from '@/services/cache/activeServicesCache';
 import { colors, spacing } from '@/theme';
 import type { ServiceWithProvider } from '@/types/service';
 import { getErrorMessage } from '@/utils/errors';
@@ -10,7 +12,7 @@ import { getErrorMessage } from '@/utils/errors';
 import { EmptyState, ErrorState, LoadingState } from './StateViews';
 
 interface ServiceListProps {
-  query: UseQueryResult<ServiceWithProvider[]>;
+  query: UseQueryResult<ActiveServicesResult>;
   /** The listings to show after filtering `query.data`. */
   services: ServiceWithProvider[];
   emptyTitle: string;

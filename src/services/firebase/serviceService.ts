@@ -16,6 +16,8 @@ import {
 
 import type { ServiceInput, ServiceListing, ServiceWithProvider } from '@/types/service';
 
+import { OfflineError } from '@/services/network/networkService';
+
 import { db } from './firebaseConfig';
 import { deleteImageByUrl } from './storageService';
 import { getProviderSummaries, getProviderSummary } from './userService';
@@ -72,6 +74,9 @@ export async function getActiveServices(): Promise<ServiceWithProvider[]> {
   const snapshot = await getDocs(
     query(servicesCollection, where('isActive', '==', true), limit(MAX_ACTIVE_LISTINGS)),
   );
+  // Offline, Firestore may answer from its partial in-memory cache. Treat that as a
+  // failure so the caller can use the complete saved copy instead.
+  if (snapshot.metadata.fromCache) throw new OfflineError();
   const listings = snapshot.docs.map((d) => mapService(d.id, d.data())).sort(newestFirst);
   return withProviders(listings);
 }

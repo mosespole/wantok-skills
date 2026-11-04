@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { updateUserProfile, type EditableProfileFields } from '@/services/firebase/userService';
+import { ensureOnline } from '@/services/network/networkService';
 
 import { useAuth } from './useAuth';
 
@@ -12,6 +13,7 @@ export function useUpdateProfile() {
   return useMutation({
     mutationFn: async (updates: EditableProfileFields) => {
       if (!user) throw new Error('You must be logged in to update your profile.');
+      await ensureOnline();
       await updateUserProfile(user.uid, updates);
     },
     onSuccess: async () => {

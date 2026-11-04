@@ -1,13 +1,13 @@
-import type { ReactNode } from 'react';
+import { use, type ReactNode } from 'react';
 import {
   KeyboardAvoidingView,
-  Platform,
   RefreshControl,
   ScrollView,
   StyleSheet,
   View,
   type ViewStyle,
 } from 'react-native';
+import { HeaderHeightContext } from 'expo-router/react-navigation';
 import { SafeAreaView, type Edge } from 'react-native-safe-area-context';
 
 import { colors, spacing } from '@/theme';
@@ -41,12 +41,17 @@ export function Screen({
   backgroundColor = colors.background,
 }: ScreenProps) {
   const padding = padded ? styles.padded : undefined;
+  // Height of the navigation header above this screen (0 when there is none).
+  const headerHeight = use(HeaderHeightContext) ?? 0;
 
   return (
     <SafeAreaView style={[styles.flex, { backgroundColor }]} edges={edges}>
       <KeyboardAvoidingView
         style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        // Expo Android apps draw edge-to-edge, so the window does not resize for the
+        // keyboard; 'padding' lifts inputs above it on both Android and iOS.
+        behavior="padding"
+        keyboardVerticalOffset={headerHeight}
       >
         {scroll ? (
           <ScrollView

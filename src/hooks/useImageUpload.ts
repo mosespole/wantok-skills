@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 
 import { uploadImage, type ImageFolder } from '@/services/firebase/storageService';
+import { ensureOnline } from '@/services/network/networkService';
 import type { PickedImage } from '@/services/media/imagePickerService';
 import { getErrorMessage } from '@/utils/errors';
 
@@ -23,6 +24,7 @@ export function useImageUpload(folder: ImageFolder) {
       setProgress(0);
       setError(null);
       try {
+        await ensureOnline();
         const url = await uploadImage({
           uid: user.uid,
           folder,
