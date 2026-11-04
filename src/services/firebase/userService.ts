@@ -1,11 +1,16 @@
 import {
+  collection,
   doc,
+  type DocumentData,
   getDoc,
+  getDocs,
+  limit,
+  query,
   serverTimestamp,
   setDoc,
   Timestamp,
   updateDoc,
-  type DocumentData,
+  where,
 } from 'firebase/firestore';
 
 import type { ProviderSummary } from '@/types/service';
@@ -140,4 +145,18 @@ export async function getProviderSummaries(uids: string[]): Promise<Map<string, 
     }
   });
   return providers;
+}
+
+const MAX_PROVIDERS = 300;
+
+/**
+ * Every provider profile, so customers can find a provider by name even before they
+ * publish a listing. The query filters on role == 'provider', which the security rules
+ * require. Ratings are not loaded here (one query per provider would be too many).
+ */
+export async function getAllProviders(): Promise<ProviderSummary[]> {
+  const snapshot = await getDocs(
+    query(collection(db, USERS), where('role', '==', 'provider'), limit(MAX_PROVIDERS)),
+  );
+  return snapshot.docs.map((d) => toProviderSummary(mapUserProfile(d.id, d.data()), null));
 }

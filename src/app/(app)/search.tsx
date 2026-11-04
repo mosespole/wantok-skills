@@ -8,11 +8,18 @@ import { CategoryChips } from '@/components/common/CategoryChips';
 import { DataStatusNotice } from '@/components/common/DataStatusNotice';
 import { SearchBar } from '@/components/common/SearchBar';
 import { ServiceList } from '@/components/common/ServiceList';
+import { ProviderCard } from '@/components/cards/ProviderCard';
+import { useAllProviders } from '@/hooks/useProvider';
 import { useActiveServices } from '@/hooks/useServices';
 import { colors, radius, spacing, typography } from '@/theme';
-import { filterServices } from '@/utils/search';
+import { filterProviders, filterServices } from '@/utils/search';
 
-/** Search & Filter: free text plus category and location filters over Firestore listings. */
+const MAX_PROVIDER_RESULTS = 10;
+
+/**
+ * Search & Filter: free text plus category and location filters. Shows matching providers
+ * (by name, skill or location, even without listings) and matching service listings.
+ */
 export default function SearchScreen() {
   const params = useLocalSearchParams<{ category?: string }>();
   const servicesQuery = useActiveServices();
@@ -31,6 +38,16 @@ export default function SearchScreen() {
     category,
   });
   const hasFilters = Boolean(text || location || category);
+
+  // Providers are only searched once the user has typed or picked a filter.
+  const providersQuery = useAllProviders(hasFilters);
+  const matchingProviders = hasFilters
+    ? filterProviders(providersQuery.data ?? [], {
+        text: deferredText,
+        location: deferredLocation,
+        category,
+      }).slice(0, MAX_PROVIDER_RESULTS)
+    : [];
 
   return (
     <View style={styles.container}>
@@ -67,11 +84,21 @@ export default function SearchScreen() {
         query={servicesQuery}
         services={results}
         header={
-          servicesQuery.isSuccess ? (
-            <AppText variant="caption" color="textSecondary" style={styles.count}>
-              {results.length} {results.length === 1 ? 'result' : 'results'}
-            </AppText>
-          ) : undefined
+          <View style={styles.header}>
+            {matchingProviders.length > 0 && (
+              <View style={styles.providers}>
+                <AppText variant="subtitle">Providers</AppText>
+                {matchingProviders.map((provider) => (
+                  <ProviderCard key={provider.uid} provider={provider} />
+                ))}
+              </View>
+            )}
+            {servicesQuery.isSuccess && (
+              <AppText variant="caption" color="textSecondary">
+                {results.length} {results.length === 1 ? 'service' : 'services'}
+              </AppText>
+            )}
+          </View>
         }
         emptyTitle={hasFilters ? 'No matching services' : 'No services yet'}
         emptyMessage={
@@ -100,5 +127,6 @@ const styles = StyleSheet.create({
   },
   locationInput: { flex: 1, ...typography.body, color: colors.textPrimary },
   chips: { paddingVertical: spacing.md },
-  count: { marginBottom: spacing.sm },
+  header: { gap: spacing.md, marginBottom: spacing.sm },
+  providers: { gap: spacing.sm },
 });

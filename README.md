@@ -22,7 +22,10 @@ Wantok Skills is an Android marketplace app that connects people in Papua New Gu
 - Listing and provider detail pages with **Call** and **WhatsApp** buttons.
 - Favourites saved to the customer's account in Firestore.
 - **Map** of providers using the device's real location.
-- Profile and listing **photo upload** to Firebase Storage (built, but switched off on the free Spark plan; see [Known limitations](#known-limitations)).
+- **Profile pictures** for all users and a **Past work** gallery for providers (photo, caption, category, optional location, date completed), stored as compressed photos in Firestore.
+- **Reviews and 1-5 star ratings**: customers review providers once each; average rating and count shown on profiles and cards.
+- Search finds **providers by name, skill or location**, even before they publish a listing.
+- Optional listing photos via Firebase Storage (built, but switched off on the free Spark plan).
 - Firestore Security Rules enforcing ownership and roles on the server.
 - Offline fallback: the latest listings and your profile are cached with AsyncStorage and clearly labelled as saved data.
 
@@ -168,7 +171,8 @@ npx eas-cli@latest build --platform android --profile production   # AAB
 
 ## Known limitations
 
-- **Photo upload is switched off.** Firebase Storage needs the Blaze (pay-as-you-go) plan; this project uses the free Spark plan. The upload code is complete but untested against a live bucket, and the upload controls are hidden until `EXPO_PUBLIC_FIREBASE_STORAGE_ENABLED=true`.
+- **Photos are stored inside Firestore**, not Firebase Storage, because the free Spark plan has no Storage. Each photo is shrunk on the phone (profile pictures about 320 px, past-work photos about 1024 px) to fit Firestore's 1 MiB document limit, so image quality is reduced. Optional listing photos (Firebase Storage) stay switched off until `EXPO_PUBLIC_FIREBASE_STORAGE_ENABLED=true`.
+- **Reviews are not verified.** Any customer can review any provider once; the app cannot prove the job took place. Ratings are not shown on search results for providers without listings (to avoid one query per provider).
 - **Search runs on the phone.** Firestore has no full-text search, so the app downloads up to 300 active listings and filters them locally. This is fine for a small marketplace but would not scale to thousands of listings.
 - **Map needs a Google Maps key in compiled builds.** In Expo Go it works without one. The web version of the app shows a message instead of a map.
 - **Offline support is read-only and partial.** The latest active listings and your own profile are saved on the phone (AsyncStorage) and shown with an "offline / saved" notice when Firestore cannot be reached. Listing details, provider pages, My Services and Favourites still need a connection, and creating, editing, deleting or favouriting is blocked while offline with a clear message (nothing is queued).
