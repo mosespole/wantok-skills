@@ -17,6 +17,7 @@ import {
 import type { ServiceInput, ServiceListing, ServiceWithProvider } from '@/types/service';
 
 import { db } from './firebaseConfig';
+import { deleteImageByUrl } from './storageService';
 import { getProviderSummaries, getProviderSummary } from './userService';
 
 const SERVICES = 'services';
@@ -120,7 +121,12 @@ export async function updateService(serviceId: string, input: Partial<ServiceInp
 
 // ---------- DELETE ----------
 
-/** Permanently removes a listing. Security rules reject this unless the caller owns it. */
-export async function deleteService(serviceId: string) {
+/**
+ * Permanently removes a listing, then its photo from Storage.
+ * Security rules reject this unless the caller owns the listing.
+ */
+export async function deleteService(serviceId: string, imageUrl: string | null) {
   await deleteDoc(doc(db, SERVICES, serviceId));
+  // The listing is already gone; a leftover photo is harmless, so clean-up errors are ignored.
+  if (imageUrl) await deleteImageByUrl(imageUrl).catch(() => undefined);
 }

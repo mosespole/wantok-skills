@@ -12,13 +12,18 @@ import { CategoryPicker } from './CategoryPicker';
 import { FormError } from './FormError';
 import { FormInput } from './FormInput';
 import { LocationField } from './LocationField';
+import { ServiceImageField, type ImageChange } from './ServiceImageField';
 
 interface ServiceFormProps {
   defaultValues: DefaultValues<ServiceFormValues>;
   submitLabel: string;
   /** Show the "visible to customers" switch (edit screen only). */
   showActiveToggle?: boolean;
-  onSubmit: (values: ServiceFormValues) => Promise<void>;
+  /** Photo already saved on the listing (edit screen). */
+  currentImageUrl?: string | null;
+  /** 0–1 while the photo uploads during save, otherwise null. */
+  uploadProgress?: number | null;
+  onSubmit: (values: ServiceFormValues, imageChange: ImageChange) => Promise<void>;
 }
 
 /** Shared by Create Listing and Edit Listing so both validate identically. */
@@ -26,9 +31,12 @@ export function ServiceForm({
   defaultValues,
   submitLabel,
   showActiveToggle = false,
+  currentImageUrl = null,
+  uploadProgress = null,
   onSubmit,
 }: ServiceFormProps) {
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [imageChange, setImageChange] = useState<ImageChange>({ type: 'keep' });
 
   const {
     control,
@@ -51,7 +59,7 @@ export function ServiceForm({
   const submit = handleSubmit(async (values) => {
     setSubmitError(null);
     try {
-      await onSubmit(values);
+      await onSubmit(values, imageChange);
     } catch (error) {
       setSubmitError(getErrorMessage(error));
     }
@@ -80,6 +88,13 @@ export function ServiceForm({
             error={error?.message}
           />
         )}
+      />
+
+      <ServiceImageField
+        currentUrl={currentImageUrl}
+        change={imageChange}
+        onChange={setImageChange}
+        uploadProgress={uploadProgress}
       />
 
       <FormInput

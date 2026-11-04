@@ -76,8 +76,9 @@ export function useUpdateService() {
 export function useDeleteService() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (serviceId: string) => deleteService(serviceId),
-    onSuccess: (_result, serviceId) => {
+    mutationFn: ({ serviceId, imageUrl }: { serviceId: string; imageUrl: string | null }) =>
+      deleteService(serviceId, imageUrl),
+    onSuccess: (_result, { serviceId }) => {
       queryClient.removeQueries({ queryKey: serviceKeys.detail(serviceId) });
       return queryClient.invalidateQueries({ queryKey: serviceKeys.all });
     },
