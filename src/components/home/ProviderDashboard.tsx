@@ -5,6 +5,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import { AppText, Avatar, Card, ErrorState, Screen, SectionHeader } from '@/components/common';
 import { getCategoryLabel } from '@/constants/categories';
+import { STORAGE_ENABLED } from '@/constants/features';
 import { useAuth } from '@/hooks/useAuth';
 import { useMyServices } from '@/hooks/useServices';
 import { colors, radius, spacing } from '@/theme';
@@ -58,7 +59,7 @@ export function ProviderDashboard() {
 
   // Prompt providers to complete the profile details customers rely on.
   const missing = [
-    !profile.profileImageUrl && 'a profile photo',
+    STORAGE_ENABLED && !profile.profileImageUrl && 'a profile photo',
     !profile.bio && 'a short bio',
     !profile.skillCategory && 'your main skill',
     profile.latitude === null && 'your map location',

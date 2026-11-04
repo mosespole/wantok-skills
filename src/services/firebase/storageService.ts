@@ -1,7 +1,26 @@
 import { FirebaseError } from 'firebase/app';
-import { deleteObject, getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
+import {
+  deleteObject,
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytesResumable,
+} from 'firebase/storage';
 
-import { storage } from './firebaseConfig';
+import { STORAGE_ENABLED } from '@/constants/features';
+
+import { app } from './firebaseConfig';
+
+/**
+ * Storage is created only when first needed, so projects without a Storage bucket
+ * (e.g. the free Spark plan) never touch it.
+ */
+function getImageStorage() {
+  if (!STORAGE_ENABLED) {
+    throw new Error('Photo uploads are not available yet.');
+  }
+  return getStorage(app);
+}
 
 /** Top-level Storage folders. storage.rules only allow a user to write inside their own UID folder. */
 export type ImageFolder = 'profileImages' | 'serviceImages';
@@ -60,7 +79,7 @@ export async function uploadImage({
 
   // A unique name per upload, so a replaced photo is never served from an old cache.
   const fileName = `${Date.now()}.${EXTENSIONS[contentType]}`;
-  const storageRef = ref(storage, `${folder}/${uid}/${fileName}`);
+  const storageRef = ref(getImageStorage(), `${folder}/${uid}/${fileName}`);
 
   const task = uploadBytesResumable(storageRef, blob, { contentType });
   await new Promise<void>((resolve, reject) => {
@@ -81,7 +100,7 @@ export async function uploadImage({
  */
 export async function deleteImageByUrl(downloadUrl: string): Promise<void> {
   try {
-    await deleteObject(ref(storage, downloadUrl));
+    await deleteObject(ref(getImageStorage(), downloadUrl));
   } catch (error) {
     if (error instanceof FirebaseError && error.code === 'storage/object-not-found') return;
     throw error;

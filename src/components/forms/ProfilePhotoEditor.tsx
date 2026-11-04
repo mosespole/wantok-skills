@@ -5,6 +5,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { AppButton, AppText, Avatar } from '@/components/common';
 import { ProgressBar } from '@/components/common/ProgressBar';
+import { STORAGE_ENABLED } from '@/constants/features';
 import { useProfilePhoto } from '@/hooks/useProfilePhoto';
 import { pickImage, type PickedImage } from '@/services/media/imagePickerService';
 import { colors, spacing } from '@/theme';
@@ -24,6 +25,14 @@ export function ProfilePhotoEditor({ name, currentUrl }: ProfilePhotoEditorProps
   const [saved, setSaved] = useState(false);
 
   const uploading = photo.status === 'uploading';
+
+  if (!STORAGE_ENABLED) {
+    return (
+      <View style={styles.wrapper}>
+        <Avatar name={name} imageUrl={currentUrl} size={SIZE} />
+      </View>
+    );
+  }
 
   const choosePhoto = async () => {
     setPickError(null);

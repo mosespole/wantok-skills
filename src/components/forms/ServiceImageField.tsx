@@ -5,6 +5,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/common';
 import { ProgressBar } from '@/components/common/ProgressBar';
+import { STORAGE_ENABLED } from '@/constants/features';
 import { pickImage, type PickedImage } from '@/services/media/imagePickerService';
 import { colors, radius, spacing } from '@/theme';
 
@@ -32,6 +33,8 @@ export function ServiceImageField({
   const previewUri =
     change.type === 'replace' ? change.image.uri : change.type === 'keep' ? currentUrl : null;
   const uploading = uploadProgress !== null;
+
+  if (!STORAGE_ENABLED) return null;
 
   const choose = async () => {
     setPickError(null);
