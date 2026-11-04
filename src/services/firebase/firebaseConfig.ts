@@ -2,7 +2,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getApp, getApps, initializeApp, type FirebaseOptions } from 'firebase/app';
 import { getAuth, getReactNativePersistence, initializeAuth, type Auth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
-import { getStorage } from 'firebase/storage';
 
 /**
  * Firebase web configuration, read from EXPO_PUBLIC_ environment variables (see .env.example).
@@ -30,7 +29,7 @@ if (missingKeys.length > 0) {
 }
 
 // Reuse the existing app during Fast Refresh instead of initialising twice.
-const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+export const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 
 /**
  * Auth stores the signed-in session in AsyncStorage so users stay logged in
@@ -45,6 +44,7 @@ function createAuth(): Auth {
   }
 }
 
+// Only Authentication and Firestore are set up at start-up. Storage is loaded on
+// demand by storageService.ts, and only when photo uploads are enabled.
 export const auth = createAuth();
 export const db = getFirestore(app);
-export const storage = getStorage(app);
