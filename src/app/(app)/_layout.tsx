@@ -24,11 +24,15 @@ export default function AppLayout() {
       <Stack.Screen name="provider/[id]" options={{ title: '' }} />
       <Stack.Screen name="search" options={{ title: 'Search' }} />
       <Stack.Screen name="edit-profile" options={{ title: 'Edit profile' }} />
+      <Stack.Screen name="work/[id]" options={{ title: 'Past work' }} />
 
       {/* Provider-only forms. Customers cannot open these even by URL. */}
       <Stack.Protected guard={isProvider}>
         <Stack.Screen name="create-service" options={{ title: 'New listing' }} />
         <Stack.Screen name="edit-service/[id]" options={{ title: 'Edit listing' }} />
+        <Stack.Screen name="my-work" options={{ title: 'My past work' }} />
+        <Stack.Screen name="add-work" options={{ title: 'Add a project' }} />
+        <Stack.Screen name="edit-work/[id]" options={{ title: 'Edit project' }} />
       </Stack.Protected>
     </Stack>
   );

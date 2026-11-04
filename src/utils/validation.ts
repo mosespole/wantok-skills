@@ -121,6 +121,25 @@ export const profileSchema = z.object({
 
 export type ProfileFormValues = z.infer<typeof profileSchema>;
 
+/** Add/Edit past work. The photo is handled separately (it is picked and compressed, not typed). */
+export const portfolioSchema = z.object({
+  caption: z
+    .string()
+    .trim()
+    .min(3, 'Describe the project in at least 3 characters')
+    .max(120, 'Caption must be 120 characters or fewer'),
+  category: z.enum(CATEGORY_IDS, { message: 'Choose a category' }),
+  locationName: z.string().trim().max(100, 'Location must be 100 characters or fewer'),
+  completedAt: z
+    .date({ message: 'Choose the date the work was completed' })
+    // Checked against the current time on every submit (allowing for time zones).
+    .refine((date) => date.getTime() <= Date.now() + 24 * 60 * 60 * 1000, {
+      message: 'The date cannot be in the future',
+    }),
+});
+
+export type PortfolioFormValues = z.infer<typeof portfolioSchema>;
+
 export type LoginFormValues = z.infer<typeof loginSchema>;
 export type RegisterFormValues = z.infer<typeof registerSchema>;
 export type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
