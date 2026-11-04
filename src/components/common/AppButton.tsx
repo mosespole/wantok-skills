@@ -66,14 +66,16 @@ export function AppButton({
       ) : (
         <View style={styles.content}>
           {icon && <Ionicons name={icon} size={20} color={colors[palette.text]} />}
-          {/* flexShrink lets long labels wrap instead of being cut off (e.g. with a large
-              system font size). 'simple' avoids Android mis-measuring bold text width. */}
+          {/* One line, shrinking the font slightly if needed, so the whole label always shows.
+              Android can mis-measure bold text and push the last word onto a hidden line. */}
           <AppText
             variant="button"
             color={palette.text}
             align="center"
             style={styles.label}
-            textBreakStrategy="simple"
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            minimumFontScale={0.75}
           >
             {title}
           </AppText>
