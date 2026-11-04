@@ -136,7 +136,7 @@ erDiagram
 - One **provider** (`users` with `role = provider`) owns **zero or many** `services`; each service belongs to exactly one provider.
 - One **user** saves **zero or many** `favourites`; each favourite references one customer and one provider.
 - One **provider** has **zero to twelve** `portfolio` items (past work).
-- One **customer** writes **at most one** review per provider (`reviews` ID `customerId_providerId`); a provider receives many reviews. The average and count are calculated with a Firestore aggregation query rather than stored.
+- One **customer** writes **at most one** review per provider (`reviews` ID `customerId_providerId`); a provider receives many reviews. The average and count are calculated in the app from the provider's reviews rather than stored (Firestore's server-side `average()` with a `providerId` filter would need an extra composite index).
 - Photos are stored as compressed JPEG data URIs inside Firestore documents because the Spark plan has no Cloud Storage.
 - The favourite document ID `customerId_providerId` makes duplicates impossible and lets the rules check ownership without extra reads.
 
