@@ -57,13 +57,16 @@ The role is chosen at registration and cannot be changed afterwards (enforced in
 
 ## 2. Data model
 
-Cloud Firestore (NoSQL). Three top-level collections. Provider details are **not copied** into listings; listings store `providerId` and the app looks the provider up in `users`.
+Cloud Firestore (NoSQL). Five top-level collections. Provider details are **not copied** into listings; listings store `providerId` and the app looks the provider up in `users`.
 
 ```mermaid
 erDiagram
     USERS ||--o{ SERVICES : "provider owns (providerId)"
     USERS ||--o{ FAVOURITES : "customer saves (customerId)"
     USERS ||--o{ FAVOURITES : "provider is saved (providerId)"
+    USERS ||--o{ PORTFOLIO : "provider shows (providerId)"
+    USERS ||--o{ REVIEWS : "customer writes (customerId)"
+    USERS ||--o{ REVIEWS : "provider receives (providerId)"
 
     USERS {
         string uid PK "document ID = Firebase Auth UID"
@@ -71,7 +74,7 @@ erDiagram
         string email
         string phoneNumber "local digits, 7-8"
         string role "customer | provider (locked)"
-        string profileImageUrl "nullable, Storage download URL"
+        string profileImageUrl "nullable, JPEG data URI (max 150 KB)"
         string bio
         string skillCategory "category id or empty"
         string locationName
@@ -98,6 +101,28 @@ erDiagram
         timestamp updatedAt
     }
 
+    PORTFOLIO {
+        string itemId PK "auto document ID"
+        string providerId FK "users.uid"
+        string imageData "JPEG data URI (max 700 KB)"
+        string caption
+        string category
+        string locationName "optional"
+        timestamp completedAt
+        timestamp createdAt
+    }
+
+    REVIEWS {
+        string reviewId PK "customerId_providerId"
+        string customerId FK "users.uid"
+        string providerId FK "users.uid"
+        string customerName "copied from profile, checked by rules"
+        number rating "integer 1-5"
+        string comment "optional, max 500"
+        timestamp createdAt
+        timestamp updatedAt
+    }
+
     FAVOURITES {
         string favouriteId PK "customerId_providerId"
         string customerId FK "users.uid"
@@ -110,6 +135,9 @@ erDiagram
 
 - One **provider** (`users` with `role = provider`) owns **zero or many** `services`; each service belongs to exactly one provider.
 - One **user** saves **zero or many** `favourites`; each favourite references one customer and one provider.
+- One **provider** has **zero to twelve** `portfolio` items (past work).
+- One **customer** writes **at most one** review per provider (`reviews` ID `customerId_providerId`); a provider receives many reviews. The average and count are calculated with a Firestore aggregation query rather than stored.
+- Photos are stored as compressed JPEG data URIs inside Firestore documents because the Spark plan has no Cloud Storage.
 - The favourite document ID `customerId_providerId` makes duplicates impossible and lets the rules check ownership without extra reads.
 
 **Categories:** carpentry, plumbing, electrical, computer-repair, tutoring, tailoring, photography, gardening, graphic-design (`src/constants/categories.ts`).
@@ -174,6 +202,15 @@ flowchart TD
         Search --> ServiceDetail
         ServiceDetail --> ProviderDetail
         ProviderDetail --> ServiceDetail
+        ProviderDetail --> WorkDetail[Past work details]
+        ProviderDetail -- customer --> Review[Write / edit review]
+        MyWork[My past work]
+        AddWork[Add project]
+        EditWork[Edit project]
+        Dashboard --> MyWork
+        MyWork --> AddWork
+        MyWork --> WorkDetail
+        WorkDetail -- owner --> EditWork
         Map --> ProviderDetail
         Favs --> ProviderDetail
         Profile --> EditProfile
@@ -208,6 +245,8 @@ Typing or deep-linking a URL to a screen whose guard is false redirects instead 
 - `users`: read own profile, or any **provider** profile; customer profiles are private. Create only your own document, with `role` in {customer, provider} and `email` matching the auth token. Update only your own document, and `uid`, `email`, `role` and `createdAt` cannot change.
 - `services`: read active listings (or your own). Create only if your role is provider and `providerId` is your UID. Update/delete only your own; ownership cannot be transferred. Field types and lengths are validated.
 - `favourites`: read/create/delete only your own; ID must be `uid_providerId`.
+- `portfolio`: signed-in users read; only providers create, under their own UID; owner-only edit/delete; photo must be a JPEG data URI under 700 KB; completion date cannot be in the future.
+- `reviews`: signed-in users read; only customers create, one per provider (ID `uid_providerId`), never for themselves, only for real providers, and `customerName` must equal their profile name; rating must be an integer 1-5; the author may edit only stars/comment, and delete their own review.
 
 `[EVIDENCE: Rules were tested on the live project on 2026-11-05 using a temporary signed-in account (deleted afterwards): active-listings query → 200; unfiltered listing query → 403; read own profile → allowed (404, no document); anonymous query → 403. Add your own two-account tests here, e.g. customer attempting to edit a provider's listing.]`
 
