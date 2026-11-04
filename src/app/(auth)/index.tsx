@@ -40,7 +40,7 @@ export default function WelcomeScreen() {
       <View style={styles.actions}>
         <AppButton title="Create an account" onPress={() => router.push('/register')} />
         <AppButton
-          title="I already have an account"
+          title="Login"
           variant="outline"
           onPress={() => router.push('/login')}
         />
