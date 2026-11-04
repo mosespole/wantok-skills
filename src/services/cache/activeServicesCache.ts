@@ -17,6 +17,17 @@ export interface ActiveServicesResult {
 }
 
 /**
+ * Profile pictures are stored as data URIs and repeated on every listing by the same
+ * provider, which could overflow AsyncStorage (about 6 MB on Android). The saved copy
+ * leaves them out; offline cards show the provider's initials instead.
+ */
+function withoutEmbeddedPhotos(service: ServiceWithProvider): ServiceWithProvider {
+  const photo = service.provider?.profileImageUrl;
+  if (!service.provider || !photo?.startsWith('data:')) return service;
+  return { ...service, provider: { ...service.provider, profileImageUrl: null } };
+}
+
+/**
  * Loads active listings from Firestore and saves a copy to AsyncStorage.
  * If Firestore cannot be reached, returns the last saved copy instead.
  * Only fails when there is neither a connection nor a saved copy.
@@ -28,7 +39,7 @@ export async function fetchActiveServicesWithFallback(): Promise<ActiveServicesR
       REMOTE_TIMEOUT_MS,
       'Loading listings took too long. Check your connection and try again.',
     );
-    await saveCache(CACHE_KEYS.activeServices, services);
+    await saveCache(CACHE_KEYS.activeServices, services.map(withoutEmbeddedPhotos));
     return { services, source: 'live', updatedAt: new Date() };
   } catch (error) {
     const cached = await loadCache<ServiceWithProvider[]>(CACHE_KEYS.activeServices);

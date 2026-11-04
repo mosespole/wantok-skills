@@ -5,7 +5,6 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import { AppText, Avatar, Card, ErrorState, Screen, SectionHeader } from '@/components/common';
 import { getCategoryLabel } from '@/constants/categories';
-import { STORAGE_ENABLED } from '@/constants/features';
 import { useAuth } from '@/hooks/useAuth';
 import { useMyServices } from '@/hooks/useServices';
 import { colors, radius, spacing } from '@/theme';
@@ -59,7 +58,7 @@ export function ProviderDashboard() {
 
   // Prompt providers to complete the profile details customers rely on.
   const missing = [
-    STORAGE_ENABLED && !profile.profileImageUrl && 'a profile photo',
+    !profile.profileImageUrl && 'a profile photo',
     !profile.bio && 'a short bio',
     !profile.skillCategory && 'your main skill',
     profile.latitude === null && 'your map location',
@@ -119,6 +118,7 @@ export function ProviderDashboard() {
         <Card style={styles.actions}>
           <ActionRow icon="add-circle-outline" title="Create a listing" href="/create-service" />
           <ActionRow icon="briefcase-outline" title="Manage my services" href="/my-services" />
+          <ActionRow icon="images-outline" title="My past work gallery" href="/my-work" />
           <ActionRow icon="person-circle-outline" title="Edit my profile" href="/edit-profile" />
           <ActionRow icon="search-outline" title="Browse the marketplace" href="/search" />
         </Card>

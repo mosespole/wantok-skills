@@ -15,6 +15,8 @@ import {
 import { ContactButtons } from '@/components/common/ContactButtons';
 import { FavouriteButton } from '@/components/common/FavouriteButton';
 import { getCategoryLabel } from '@/constants/categories';
+import { PortfolioGallery } from '@/components/portfolio/PortfolioGallery';
+import { usePortfolio } from '@/hooks/usePortfolio';
 import { useProvider } from '@/hooks/useProvider';
 import { useProviderServices } from '@/hooks/useServices';
 import { colors, radius, spacing } from '@/theme';
@@ -27,6 +29,7 @@ export default function ProviderDetailsScreen() {
   const providerId = id ?? '';
   const providerQuery = useProvider(providerId);
   const servicesQuery = useProviderServices(providerId);
+  const portfolioQuery = usePortfolio(providerId);
 
   const provider = providerQuery.data;
 
@@ -60,8 +63,11 @@ export default function ProviderDetailsScreen() {
       onRefresh={() => {
         void providerQuery.refetch();
         void servicesQuery.refetch();
+        void portfolioQuery.refetch();
       }}
-      refreshing={providerQuery.isRefetching || servicesQuery.isRefetching}
+      refreshing={
+        providerQuery.isRefetching || servicesQuery.isRefetching || portfolioQuery.isRefetching
+      }
     >
       <Stack.Screen
         options={{
@@ -108,6 +114,23 @@ export default function ProviderDetailsScreen() {
         phone={provider.phoneNumber}
         whatsAppMessage="Hello, I found your profile on Wantok Skills."
       />
+
+      <View style={styles.section}>
+        <SectionHeader title="Past work" />
+        {portfolioQuery.isLoading ? (
+          <LoadingState message="Loading past work..." />
+        ) : portfolioQuery.isError ? (
+          <ErrorState
+            message={getErrorMessage(portfolioQuery.error)}
+            onRetry={() => portfolioQuery.refetch()}
+            retrying={portfolioQuery.isFetching}
+          />
+        ) : (portfolioQuery.data ?? []).length === 0 ? (
+          <AppText color="textSecondary">No past work photos yet.</AppText>
+        ) : (
+          <PortfolioGallery items={portfolioQuery.data ?? []} />
+        )}
+      </View>
 
       <View style={styles.section}>
         <SectionHeader title="Services offered" />

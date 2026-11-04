@@ -4,8 +4,6 @@ import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { AppButton, AppText, Avatar } from '@/components/common';
-import { ProgressBar } from '@/components/common/ProgressBar';
-import { STORAGE_ENABLED } from '@/constants/features';
 import { useProfilePhoto } from '@/hooks/useProfilePhoto';
 import { pickImage, type PickedImage } from '@/services/media/imagePickerService';
 import { colors, spacing } from '@/theme';
@@ -17,26 +15,16 @@ interface ProfilePhotoEditorProps {
   currentUrl: string | null;
 }
 
-/** Choose → preview → upload flow for the profile photo, with progress, success and retry. */
+/** Choose → preview → save flow for the profile picture, with success, error and retry. */
 export function ProfilePhotoEditor({ name, currentUrl }: ProfilePhotoEditorProps) {
   const photo = useProfilePhoto();
   const [picked, setPicked] = useState<PickedImage | null>(null);
   const [pickError, setPickError] = useState<string | null>(null);
-  const [saved, setSaved] = useState(false);
 
-  const uploading = photo.status === 'uploading';
-
-  if (!STORAGE_ENABLED) {
-    return (
-      <View style={styles.wrapper}>
-        <Avatar name={name} imageUrl={currentUrl} size={SIZE} />
-      </View>
-    );
-  }
+  const saving = photo.status === 'saving';
 
   const choosePhoto = async () => {
     setPickError(null);
-    setSaved(false);
     photo.reset();
     try {
       const image = await pickImage({ aspect: [1, 1] });
@@ -46,14 +34,13 @@ export function ProfilePhotoEditor({ name, currentUrl }: ProfilePhotoEditorProps
     }
   };
 
-  const uploadPhoto = async () => {
+  const savePhoto = async () => {
     if (!picked) return;
     try {
-      await photo.replacePhoto(picked);
+      await photo.savePhoto(picked);
       setPicked(null);
-      setSaved(true);
     } catch {
-      // The hook already holds a readable error message; the picked photo is kept for a retry.
+      // The hook holds a readable error; the picked photo is kept so the user can retry.
     }
   };
 
@@ -70,20 +57,11 @@ export function ProfilePhotoEditor({ name, currentUrl }: ProfilePhotoEditorProps
         <Avatar name={name} imageUrl={currentUrl} size={SIZE} />
       )}
 
-      {uploading && (
-        <View style={styles.progress}>
-          <ProgressBar value={photo.progress} />
-          <AppText variant="caption" color="textSecondary" align="center">
-            Uploading... {Math.round(photo.progress * 100)}%
-          </AppText>
-        </View>
-      )}
-
-      {saved && (
+      {photo.status === 'success' && (
         <View style={styles.message}>
           <Ionicons name="checkmark-circle" size={18} color={colors.success} />
           <AppText variant="caption" color="success">
-            Profile photo updated
+            Profile picture updated
           </AppText>
         </View>
       )}
@@ -103,25 +81,37 @@ export function ProfilePhotoEditor({ name, currentUrl }: ProfilePhotoEditorProps
               setPicked(null);
               photo.reset();
             }}
-            disabled={uploading}
+            disabled={saving}
             fullWidth={false}
           />
           <AppButton
-            title={photo.status === 'error' ? 'Retry upload' : 'Upload photo'}
-            icon="cloud-upload-outline"
-            onPress={uploadPhoto}
-            loading={uploading}
+            title={photo.status === 'error' ? 'Try again' : 'Save picture'}
+            icon="checkmark"
+            onPress={savePhoto}
+            loading={saving}
             fullWidth={false}
           />
         </View>
       ) : (
-        <AppButton
-          title={currentUrl ? 'Change photo' : 'Add a profile photo'}
-          icon="image-outline"
-          variant="secondary"
-          onPress={choosePhoto}
-          fullWidth={false}
-        />
+        <View style={styles.actions}>
+          <AppButton
+            title={currentUrl ? 'Change picture' : 'Add a profile picture'}
+            icon="image-outline"
+            variant="secondary"
+            onPress={choosePhoto}
+            disabled={saving}
+            fullWidth={false}
+          />
+          {currentUrl && (
+            <AppButton
+              title="Remove"
+              variant="ghost"
+              onPress={photo.removePhoto}
+              loading={saving}
+              fullWidth={false}
+            />
+          )}
+        </View>
       )}
     </View>
   );
@@ -130,7 +120,6 @@ export function ProfilePhotoEditor({ name, currentUrl }: ProfilePhotoEditorProps
 const styles = StyleSheet.create({
   wrapper: { alignItems: 'center', gap: spacing.md },
   preview: { width: SIZE, height: SIZE, borderRadius: SIZE / 2 },
-  progress: { alignSelf: 'stretch', gap: spacing.xs },
   message: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
-  actions: { flexDirection: 'row', gap: spacing.sm },
+  actions: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: spacing.sm },
 });
