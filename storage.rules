@@ -1,0 +1,35 @@
+rules_version = '2';
+
+// Wantok Skills Cloud Storage Security Rules.
+// Users can only write inside their own folder, only images, and only up to 5 MB.
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    function isValidImage() {
+      return request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/(jpeg|png|webp)');
+    }
+
+    // profileImages/{uid}/{fileName}
+    match /profileImages/{uid}/{fileName} {
+      allow read: if signedIn();
+      allow create, update: if isOwner(uid) && isValidImage();
+      allow delete: if isOwner(uid);
+    }
+
+    // serviceImages/{uid}/{fileName}
+    match /serviceImages/{uid}/{fileName} {
+      allow read: if signedIn();
+      allow create, update: if isOwner(uid) && isValidImage();
+      allow delete: if isOwner(uid);
+    }
+  }
+}
