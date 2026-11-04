@@ -66,7 +66,15 @@ export function AppButton({
       ) : (
         <View style={styles.content}>
           {icon && <Ionicons name={icon} size={20} color={colors[palette.text]} />}
-          <AppText variant="button" color={palette.text}>
+          {/* flexShrink lets long labels wrap instead of being cut off (e.g. with a large
+              system font size). 'simple' avoids Android mis-measuring bold text width. */}
+          <AppText
+            variant="button"
+            color={palette.text}
+            align="center"
+            style={styles.label}
+            textBreakStrategy="simple"
+          >
             {title}
           </AppText>
         </View>
@@ -79,13 +87,21 @@ const styles = StyleSheet.create({
   base: {
     minHeight: 50,
     paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.sm,
     borderRadius: radius.md,
     borderWidth: 1.5,
     alignItems: 'center',
     justifyContent: 'center',
   },
   fullWidth: { alignSelf: 'stretch' },
-  content: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  content: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    maxWidth: '100%',
+  },
+  label: { flexShrink: 1 },
   pressed: { opacity: 0.85 },
   disabled: { opacity: 0.55 },
 });
