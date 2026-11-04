@@ -4,6 +4,7 @@ import { router } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
 import { AppText, Avatar, Card } from '@/components/common';
+import { RatingBadge } from '@/components/reviews/StarRating';
 import { CATEGORIES, getCategoryLabel } from '@/constants/categories';
 import { colors, radius, spacing } from '@/theme';
 import type { ServiceWithProvider } from '@/types/service';
@@ -55,9 +56,12 @@ export function ServiceCard({ service, distanceKm }: ServiceCardProps) {
             {distanceKm != null ? ` · ${distanceKm < 1 ? '<1' : Math.round(distanceKm)} km` : ''}
           </AppText>
         </View>
-        <AppText variant="label" color="primary">
-          {formatPrice(service.startingPrice)}
-        </AppText>
+        <View style={styles.footerRow}>
+          <AppText variant="label" color="primary" style={styles.flex}>
+            {formatPrice(service.startingPrice)}
+          </AppText>
+          <RatingBadge rating={service.provider?.rating} />
+        </View>
       </View>
     </Card>
   );
@@ -75,4 +79,5 @@ const styles = StyleSheet.create({
   providerRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
   metaRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.xxs },
   flex: { flex: 1 },
+  footerRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
 });

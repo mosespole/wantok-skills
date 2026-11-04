@@ -179,6 +179,49 @@ service cloud.firestore {
       allow delete: if signedIn() && resource.data.providerId == request.auth.uid;
     }
 
+    // ---------- reviews/{reviewId} ----------
+    // Document ID is "{customerId}_{providerId}": one review per customer per provider.
+
+    function userDoc(uid) {
+      return get(/databases/$(database)/documents/users/$(uid));
+    }
+
+    function validRating(data) {
+      return data.rating is int && data.rating >= 1 && data.rating <= 5
+        && isText(data.comment, 0, 500);
+    }
+
+    match /reviews/{reviewId} {
+      allow read: if signedIn();
+
+      // Only customers review, only providers can be reviewed, nobody reviews themselves,
+      // and the displayed name must be the reviewer's real profile name.
+      allow create: if signedIn()
+        && currentUserRole() == 'customer'
+        && request.resource.data.keys().hasOnly([
+          'customerId', 'customerName', 'providerId', 'rating', 'comment',
+          'createdAt', 'updatedAt'
+        ])
+        && request.resource.data.customerId == request.auth.uid
+        && request.resource.data.providerId != request.auth.uid
+        && reviewId == request.auth.uid + '_' + request.resource.data.providerId
+        && userDoc(request.resource.data.providerId).data.role == 'provider'
+        && request.resource.data.customerName == userDoc(request.auth.uid).data.fullName
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time
+        && validRating(request.resource.data);
+
+      // The author may change only the stars and comment.
+      allow update: if signedIn()
+        && resource.data.customerId == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['rating', 'comment', 'updatedAt'])
+        && request.resource.data.updatedAt == request.time
+        && validRating(request.resource.data);
+
+      allow delete: if signedIn() && resource.data.customerId == request.auth.uid;
+    }
+
     // ---------- favourites/{favouriteId} ----------
     // Document ID is "{customerId}_{providerId}", which prevents duplicates.
 

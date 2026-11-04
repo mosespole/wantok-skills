@@ -1,0 +1,126 @@
+import { useState } from 'react';
+import { StyleSheet, View } from 'react-native';
+
+import { AppButton, AppInput, AppText, Card, ConfirmDialog } from '@/components/common';
+import { useDeleteReview, useSaveReview } from '@/hooks/useReviews';
+import { spacing } from '@/theme';
+import type { Review } from '@/types/review';
+import { getErrorMessage } from '@/utils/errors';
+import { reviewSchema } from '@/utils/validation';
+
+import { StarInput } from './StarRating';
+
+interface ReviewFormProps {
+  providerId: string;
+  providerName: string;
+  /** The customer's existing review, when editing. */
+  existing: Review | null;
+}
+
+/** Lets a customer write, edit or delete their single review of a provider. */
+export function ReviewForm({ providerId, providerName, existing }: ReviewFormProps) {
+  const saveReview = useSaveReview(providerId);
+  const deleteReview = useDeleteReview(providerId);
+  const [rating, setRating] = useState(existing?.rating ?? 0);
+  const [comment, setComment] = useState(existing?.comment ?? '');
+  const [error, setError] = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+
+  const submit = async () => {
+    setError(null);
+    setSaved(false);
+    const parsed = reviewSchema.safeParse({ rating, comment });
+    if (!parsed.success) {
+      setError(parsed.error.issues[0]?.message ?? 'Check your review and try again.');
+      return;
+    }
+    try {
+      await saveReview.mutateAsync({ ...parsed.data, isUpdate: existing !== null });
+      setSaved(true);
+    } catch (saveError) {
+      setError(getErrorMessage(saveError));
+    }
+  };
+
+  const remove = async () => {
+    setError(null);
+    try {
+      await deleteReview.mutateAsync();
+      setRating(0);
+      setComment('');
+      setSaved(false);
+    } catch (deleteError) {
+      setError(getErrorMessage(deleteError));
+    } finally {
+      setConfirmDelete(false);
+    }
+  };
+
+  return (
+    <Card style={styles.card}>
+      <AppText variant="bodyStrong">{existing ? 'Your review' : `Rate ${providerName}`}</AppText>
+      <StarInput
+        value={rating}
+        onChange={(stars) => {
+          setRating(stars);
+          setSaved(false);
+        }}
+      />
+      <AppInput
+        label="Comment"
+        optional
+        value={comment}
+        onChangeText={(text) => {
+          setComment(text);
+          setSaved(false);
+        }}
+        placeholder="How was the work? Was it on time and good value?"
+        multiline
+        maxLength={500}
+      />
+      {error && (
+        <AppText variant="caption" color="error">
+          {error}
+        </AppText>
+      )}
+      {saved && (
+        <AppText variant="caption" color="success">
+          Thank you. Your review has been saved.
+        </AppText>
+      )}
+      <View style={styles.actions}>
+        {existing && (
+          <AppButton
+            title="Delete"
+            variant="ghost"
+            onPress={() => setConfirmDelete(true)}
+            fullWidth={false}
+          />
+        )}
+        <AppButton
+          title={existing ? 'Update review' : 'Post review'}
+          onPress={submit}
+          loading={saveReview.isPending}
+          fullWidth={false}
+        />
+      </View>
+
+      <ConfirmDialog
+        visible={confirmDelete}
+        title="Delete your review?"
+        message="Your rating and comment will be removed."
+        confirmLabel="Delete"
+        destructive
+        loading={deleteReview.isPending}
+        onConfirm={remove}
+        onCancel={() => setConfirmDelete(false)}
+      />
+    </Card>
+  );
+}
+
+const styles = StyleSheet.create({
+  card: { gap: spacing.md },
+  actions: { flexDirection: 'row', justifyContent: 'flex-end', gap: spacing.sm },
+});
