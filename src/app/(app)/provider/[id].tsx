@@ -16,6 +16,8 @@ import { ContactButtons } from '@/components/common/ContactButtons';
 import { FavouriteButton } from '@/components/common/FavouriteButton';
 import { getCategoryLabel } from '@/constants/categories';
 import { PortfolioGallery } from '@/components/portfolio/PortfolioGallery';
+import { ReviewsSection } from '@/components/reviews/ReviewsSection';
+import { RatingBadge } from '@/components/reviews/StarRating';
 import { usePortfolio } from '@/hooks/usePortfolio';
 import { useProvider } from '@/hooks/useProvider';
 import { useProviderServices } from '@/hooks/useServices';
@@ -83,6 +85,7 @@ export default function ProviderDetailsScreen() {
         <AppText variant="title" align="center">
           {provider.fullName}
         </AppText>
+        <RatingBadge rating={provider.rating} />
         {provider.skillCategory !== '' && (
           <View style={styles.skillChip}>
             <AppText variant="label" color="primary">
@@ -167,6 +170,8 @@ export default function ProviderDetailsScreen() {
           ))
         )}
       </View>
+
+      <ReviewsSection providerId={provider.uid} providerName={provider.fullName} />
     </Screen>
   );
 }

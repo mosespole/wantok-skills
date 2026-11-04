@@ -140,6 +140,15 @@ export const portfolioSchema = z.object({
 
 export type PortfolioFormValues = z.infer<typeof portfolioSchema>;
 
+export const reviewSchema = z.object({
+  rating: z
+    .number()
+    .int()
+    .min(1, 'Tap the stars to choose a rating')
+    .max(5, 'Ratings go up to 5 stars'),
+  comment: z.string().trim().max(500, 'Comment must be 500 characters or fewer'),
+});
+
 export type LoginFormValues = z.infer<typeof loginSchema>;
 export type RegisterFormValues = z.infer<typeof registerSchema>;
 export type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;

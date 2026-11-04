@@ -12,6 +12,7 @@ import type { ProviderSummary } from '@/types/service';
 import type { UserProfile, UserRole } from '@/types/user';
 
 import { db } from './firebaseConfig';
+import { getRatingSummary } from './reviewService';
 
 const USERS = 'users';
 
@@ -91,7 +92,10 @@ export async function updateUserProfile(uid: string, updates: EditableProfileFie
   await updateDoc(doc(db, USERS, uid), { ...updates, updatedAt: serverTimestamp() });
 }
 
-function toProviderSummary(profile: UserProfile): ProviderSummary {
+function toProviderSummary(
+  profile: UserProfile,
+  rating: ProviderSummary['rating'],
+): ProviderSummary {
   const { uid, fullName, phoneNumber, profileImageUrl, bio, skillCategory } = profile;
   const { locationName, latitude, longitude } = profile;
   return {
@@ -104,15 +108,22 @@ function toProviderSummary(profile: UserProfile): ProviderSummary {
     locationName,
     latitude,
     longitude,
+    rating,
   };
 }
 
-/** Public details of one provider, or null if they no longer exist. */
+/**
+ * Public details of one provider with their star rating, or null if they no longer exist.
+ * A rating that cannot be loaded is shown as "no rating" rather than failing the page.
+ */
 export async function getProviderSummary(uid: string): Promise<ProviderSummary | null> {
-  const snapshot = await getDoc(doc(db, USERS, uid));
+  const [snapshot, rating] = await Promise.all([
+    getDoc(doc(db, USERS, uid)),
+    getRatingSummary(uid).catch(() => null),
+  ]);
   if (!snapshot.exists()) return null;
   const profile = mapUserProfile(snapshot.id, snapshot.data());
-  return profile.role === 'provider' ? toProviderSummary(profile) : null;
+  return profile.role === 'provider' ? toProviderSummary(profile, rating) : null;
 }
 
 /**

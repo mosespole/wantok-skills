@@ -1,3 +1,4 @@
+import type { RatingSummary } from './review';
 import type { UserProfile } from './user';
 
 /** A document in the `services` collection. Each listing belongs to one provider. */
@@ -25,7 +26,12 @@ export type ServiceInput = Omit<
 >;
 
 /** Public provider details shown alongside a listing (read from `users`, not copied into it). */
-export type ProviderSummary = Pick<
+export type ProviderSummary = ProviderProfileFields & {
+  /** Average stars and review count; null if it could not be loaded. */
+  rating: RatingSummary | null;
+};
+
+type ProviderProfileFields = Pick<
   UserProfile,
   | 'uid'
   | 'fullName'

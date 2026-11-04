@@ -4,6 +4,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { AppText, Avatar, Card } from '@/components/common';
 import { FavouriteButton } from '@/components/common/FavouriteButton';
+import { RatingBadge } from '@/components/reviews/StarRating';
 import { getCategoryLabel } from '@/constants/categories';
 import { colors, spacing } from '@/theme';
 import type { ProviderSummary } from '@/types/service';
@@ -26,6 +27,7 @@ export function ProviderCard({ provider }: { provider: ProviderSummary }) {
             {getCategoryLabel(provider.skillCategory)}
           </AppText>
         )}
+        <RatingBadge rating={provider.rating} />
         {provider.locationName !== '' && (
           <View style={styles.metaRow}>
             <Ionicons name="location-outline" size={14} color={colors.textMuted} />
