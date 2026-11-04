@@ -58,6 +58,10 @@ export default function TabsLayout() {
       </Tabs.Protected>
 
       <Tabs.Screen
+        name="map"
+        options={{ title: 'Map', tabBarIcon: tabIcon('map-outline', 'map') }}
+      />
+      <Tabs.Screen
         name="favourites"
         options={{ title: 'Favourites', tabBarIcon: tabIcon('heart-outline', 'heart') }}
       />
