@@ -2,10 +2,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
-import MapView, { Marker, type Region } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AppButton, AppText, Avatar, Card, ErrorState, LoadingState } from '@/components/common';
+import { ProviderMap, type ProviderMapHandle } from '@/components/map/ProviderMap';
 import { getCategoryLabel } from '@/constants/categories';
 import { useCurrentLocation } from '@/hooks/useLocation';
 import { useActiveServices } from '@/hooks/useServices';
@@ -14,24 +14,12 @@ import { colors, radius, shadows, spacing } from '@/theme';
 import { getErrorMessage } from '@/utils/errors';
 import { buildProviderPins, type ProviderPin } from '@/utils/mapPins';
 
-/**
- * Initial camera before any real position is known: the whole of Papua New Guinea.
- * This only frames the map; it is never used as the user's location.
- */
-const PNG_OVERVIEW: Region = {
-  latitude: -6.5,
-  longitude: 146.5,
-  latitudeDelta: 12,
-  longitudeDelta: 12,
-};
-const USER_ZOOM = { latitudeDelta: 0.15, longitudeDelta: 0.15 };
 // Keeps the round buttons above the selected-provider card.
 const SELECTED_CARD_SPACE = 190;
-const EDGE_PADDING = { top: 140, right: 60, bottom: 260, left: 60 };
 
 /** Map: the user's real position plus one marker per provider with saved coordinates. */
 export default function MapScreen() {
-  const mapRef = useRef<MapView>(null);
+  const mapRef = useRef<ProviderMapHandle>(null);
   const servicesQuery = useActiveServices();
   const location = useCurrentLocation();
   const { requestLocation } = location;
@@ -47,20 +35,17 @@ export default function MapScreen() {
   // Centre on the user whenever a real position arrives.
   const userCoords = location.coords;
   useEffect(() => {
-    if (userCoords) mapRef.current?.animateToRegion({ ...userCoords, ...USER_ZOOM }, 600);
+    if (userCoords) mapRef.current?.centreOn(userCoords);
   }, [userCoords]);
 
   const showAllProviders = () => {
     if (pins.length === 0) return;
-    mapRef.current?.fitToCoordinates(
-      pins.map((pin) => pin.coordinate),
-      { edgePadding: EDGE_PADDING, animated: true },
-    );
+    mapRef.current?.fitTo(pins.map((pin) => pin.coordinate));
   };
 
   const centreOnMe = async () => {
     const coords = userCoords ?? (await requestLocation())?.coords;
-    if (coords) mapRef.current?.animateToRegion({ ...coords, ...USER_ZOOM }, 600);
+    if (coords) mapRef.current?.centreOn(coords);
   };
 
   const distanceText =
@@ -86,26 +71,15 @@ export default function MapScreen() {
 
   return (
     <View style={styles.container}>
-      <MapView
+      <ProviderMap
         ref={mapRef}
-        style={StyleSheet.absoluteFill}
-        initialRegion={userCoords ? { ...userCoords, ...USER_ZOOM } : PNG_OVERVIEW}
+        pins={pins}
+        selectedId={selected?.providerId ?? null}
+        userCoords={userCoords}
         showsUserLocation={location.status === 'success'}
-        showsMyLocationButton={false}
-        toolbarEnabled={false}
-        onPress={() => setSelected(null)}
-      >
-        {pins.map((pin) => (
-          <Marker
-            key={pin.providerId}
-            coordinate={pin.coordinate}
-            title={pin.provider.fullName}
-            description={pin.categories.map(getCategoryLabel).join(', ')}
-            pinColor={selected?.providerId === pin.providerId ? colors.accentGold : colors.primary}
-            onPress={() => setSelected(pin)}
-          />
-        ))}
-      </MapView>
+        onSelect={setSelected}
+        onMapPress={() => setSelected(null)}
+      />
 
       <SafeAreaView edges={['top']} style={styles.topOverlay} pointerEvents="box-none">
         <Card style={styles.statusCard}>
