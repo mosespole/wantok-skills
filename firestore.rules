@@ -1,0 +1,155 @@
+rules_version = '2';
+
+// Wantok Skills Firestore Security Rules.
+// Every rule is enforced by Firebase on the server, so hiding a button in the
+// app is never the only protection. Anything not explicitly allowed is denied.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------- Helpers ----------
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isSelf(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    function currentUserRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+
+    function isProvider() {
+      return signedIn() && currentUserRole() == 'provider';
+    }
+
+    function isText(value, minLen, maxLen) {
+      return value is string && value.size() >= minLen && value.size() <= maxLen;
+    }
+
+    function isOptionalNumberInRange(value, low, high) {
+      return value == null || (value is number && value >= low && value <= high);
+    }
+
+    function isOptionalUrl(value) {
+      return value == null || (value is string && value.matches('https://.*') && value.size() <= 2048);
+    }
+
+    function isCategory(value) {
+      return value in [
+        'carpentry', 'plumbing', 'electrical', 'computer-repair', 'tutoring',
+        'tailoring', 'photography', 'gardening', 'graphic-design'
+      ];
+    }
+
+    // ---------- users/{uid} ----------
+    // Document ID is the Firebase Auth UID.
+
+    function validProfileFields(data) {
+      return isText(data.fullName, 2, 60)
+        && data.phoneNumber is string && data.phoneNumber.matches('[0-9]{7,8}')
+        && isText(data.bio, 0, 500)
+        && (data.skillCategory == '' || isCategory(data.skillCategory))
+        && isText(data.locationName, 0, 100)
+        && isOptionalNumberInRange(data.latitude, -90, 90)
+        && isOptionalNumberInRange(data.longitude, -180, 180)
+        && isOptionalUrl(data.profileImageUrl);
+    }
+
+    match /users/{uid} {
+      // Users can read their own profile. Other signed-in users can read only
+      // provider profiles (the public marketplace); customer profiles stay private.
+      allow read: if isSelf(uid) || (signedIn() && resource.data.role == 'provider');
+
+      // Created once at registration. The role is chosen here and the email
+      // must match the Firebase Auth account.
+      allow create: if isSelf(uid)
+        && request.resource.data.keys().hasOnly([
+          'uid', 'fullName', 'email', 'phoneNumber', 'role', 'profileImageUrl', 'bio',
+          'skillCategory', 'locationName', 'latitude', 'longitude', 'createdAt', 'updatedAt'
+        ])
+        && request.resource.data.uid == uid
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.role in ['customer', 'provider']
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time
+        && validProfileFields(request.resource.data);
+
+      // Users may edit their own profile, but uid, email, role and createdAt are locked,
+      // so nobody can promote themselves to another role.
+      allow update: if isSelf(uid)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'fullName', 'phoneNumber', 'profileImageUrl', 'bio', 'skillCategory',
+          'locationName', 'latitude', 'longitude', 'updatedAt'
+        ])
+        && request.resource.data.updatedAt == request.time
+        && validProfileFields(request.resource.data);
+
+      allow delete: if false;
+    }
+
+    // ---------- services/{serviceId} ----------
+    // Each listing belongs to exactly one provider (providerId).
+
+    function validServiceFields(data) {
+      return data.keys().hasOnly([
+          'providerId', 'title', 'category', 'description', 'locationName', 'latitude',
+          'longitude', 'contactNumber', 'startingPrice', 'imageUrl', 'isActive',
+          'createdAt', 'updatedAt'
+        ])
+        && isText(data.title, 3, 80)
+        && isCategory(data.category)
+        && isText(data.description, 10, 1000)
+        && isText(data.locationName, 2, 100)
+        && isOptionalNumberInRange(data.latitude, -90, 90)
+        && isOptionalNumberInRange(data.longitude, -180, 180)
+        && data.contactNumber is string && data.contactNumber.matches('[0-9]{7,8}')
+        && isOptionalNumberInRange(data.startingPrice, 0, 1000000)
+        && isOptionalUrl(data.imageUrl)
+        && data.isActive is bool;
+    }
+
+    match /services/{serviceId} {
+      // Signed-in users see active listings; providers also see their own inactive ones.
+      // List queries must therefore filter on isActive == true or providerId == uid.
+      allow read: if signedIn()
+        && (resource.data.isActive == true || resource.data.providerId == request.auth.uid);
+
+      // Only providers can create listings, and only under their own UID.
+      allow create: if isProvider()
+        && request.resource.data.providerId == request.auth.uid
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time
+        && validServiceFields(request.resource.data);
+
+      // Only the owner can edit; ownership and creation time cannot be changed.
+      allow update: if signedIn()
+        && resource.data.providerId == request.auth.uid
+        && request.resource.data.providerId == resource.data.providerId
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.updatedAt == request.time
+        && validServiceFields(request.resource.data);
+
+      allow delete: if signedIn() && resource.data.providerId == request.auth.uid;
+    }
+
+    // ---------- favourites/{favouriteId} ----------
+    // Document ID is "{customerId}_{providerId}", which prevents duplicates.
+
+    match /favourites/{favouriteId} {
+      allow read: if signedIn() && resource.data.customerId == request.auth.uid;
+
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['customerId', 'providerId', 'createdAt'])
+        && request.resource.data.customerId == request.auth.uid
+        && request.resource.data.providerId is string
+        && request.resource.data.providerId != request.auth.uid
+        && favouriteId == request.auth.uid + '_' + request.resource.data.providerId
+        && request.resource.data.createdAt == request.time;
+
+      allow update: if false;
+      allow delete: if signedIn() && resource.data.customerId == request.auth.uid;
+    }
+  }
+}
