@@ -8,13 +8,14 @@ import {
   AppText,
   Avatar,
   ErrorState,
+  HeaderBanner,
   LoadingState,
   Screen,
   SectionHeader,
 } from '@/components/common';
 import { DataStatusNotice } from '@/components/common/DataStatusNotice';
 import { SearchBar } from '@/components/common/SearchBar';
-import { APP_TAGLINE } from '@/constants/app';
+import { APP_SLOGAN_TOK_PISIN, APP_TAGLINE, tokPisinGreeting } from '@/constants/app';
 import { CATEGORIES } from '@/constants/categories';
 import { useAuth } from '@/hooks/useAuth';
 import { useCurrentLocation } from '@/hooks/useLocation';
@@ -70,148 +71,190 @@ export function CustomerHome() {
 
   return (
     <Screen
-      edges={['top']}
+      edges={[]}
+      padded={false}
       onRefresh={() => servicesQuery.refetch()}
       refreshing={servicesQuery.isRefetching}
     >
-      <View style={styles.greetingRow}>
-        <View style={styles.flex}>
-          <AppText variant="title">Hello, {firstName}</AppText>
-          <AppText variant="caption" color="textSecondary">
+      <HeaderBanner>
+        <View style={styles.greetingRow}>
+          <View style={styles.flex}>
+            <AppText variant="label" color="textOnPrimaryMuted">
+              {tokPisinGreeting()}!
+            </AppText>
+            <AppText variant="title" color="textOnPrimary" numberOfLines={1}>
+              Hello, {firstName}
+            </AppText>
+          </View>
+          <Pressable
+            onPress={() => router.navigate('/profile')}
+            style={styles.avatarRing}
+            accessibilityRole="button"
+            accessibilityLabel="Open your profile"
+          >
+            <Avatar name={profile?.fullName ?? ''} imageUrl={profile?.profileImageUrl} size={44} />
+          </Pressable>
+        </View>
+        <View style={styles.slogan}>
+          <AppText variant="subtitle" color="textOnPrimary">
+            {APP_SLOGAN_TOK_PISIN}
+          </AppText>
+          <AppText variant="caption" color="textOnPrimaryMuted">
             {APP_TAGLINE}
           </AppText>
         </View>
-        <Avatar name={profile?.fullName ?? ''} imageUrl={profile?.profileImageUrl} size={44} />
-      </View>
+        <SearchBar onPress={() => router.push('/search')} />
+      </HeaderBanner>
 
-      <DataStatusNotice
-        source={servicesQuery.data?.source}
-        updatedAt={servicesQuery.data?.updatedAt}
-        onRetry={() => servicesQuery.refetch()}
-      />
-
-      <SearchBar onPress={() => router.push('/search')} />
-
-      <View>
-        <SectionHeader
-          title="Categories"
-          actionLabel="See all"
-          onAction={() => router.navigate('/explore')}
-        />
-        <View style={styles.categoryGrid}>
-          {CATEGORIES.map((category) => (
-            <Pressable
-              key={category.id}
-              style={styles.categoryTile}
-              onPress={() =>
-                router.navigate({ pathname: '/explore', params: { category: category.id } })
-              }
-              accessibilityRole="button"
-              accessibilityLabel={`Browse ${category.label}`}
-            >
-              <View style={styles.categoryIcon}>
-                <Ionicons name={category.icon} size={22} color={colors.primary} />
-              </View>
-              <AppText variant="caption" align="center" numberOfLines={2}>
-                {category.label}
-              </AppText>
-            </Pressable>
-          ))}
-        </View>
-      </View>
-
-      {servicesQuery.isLoading ? (
-        <LoadingState message="Loading services..." />
-      ) : servicesQuery.isError && !servicesQuery.data ? (
-        <ErrorState
-          message={getErrorMessage(servicesQuery.error)}
+      <View style={styles.content}>
+        <DataStatusNotice
+          source={servicesQuery.data?.source}
+          updatedAt={servicesQuery.data?.updatedAt}
           onRetry={() => servicesQuery.refetch()}
-          retrying={servicesQuery.isFetching}
         />
-      ) : services.length === 0 ? (
-        <AppText color="textSecondary" align="center">
-          No services have been listed yet. Check back soon.
-        </AppText>
-      ) : (
-        <>
-          <View style={styles.section}>
-            <SectionHeader title="Near you" />
-            {location.coords ? (
-              nearby.length > 0 ? (
-                nearby.map(({ service, distance }) => (
-                  <ServiceCard key={service.serviceId} service={service} distanceKm={distance} />
-                ))
-              ) : (
-                <AppText color="textSecondary">
-                  No providers have pinned a location within {NEARBY_RADIUS_KM} km of you yet.
+
+        <View>
+          <SectionHeader
+            title="Categories"
+            actionLabel="See all"
+            onAction={() => router.navigate('/explore')}
+          />
+          <View style={styles.categoryGrid}>
+            {CATEGORIES.map((category) => (
+              <Pressable
+                key={category.id}
+                style={({ pressed }) => [styles.categoryTile, pressed && styles.pressed]}
+                onPress={() =>
+                  router.navigate({ pathname: '/explore', params: { category: category.id } })
+                }
+                accessibilityRole="button"
+                accessibilityLabel={`Browse ${category.label}`}
+              >
+                <View style={[styles.categoryIcon, { backgroundColor: category.tint }]}>
+                  <Ionicons name={category.icon} size={24} color={category.color} />
+                </View>
+                <AppText variant="caption" align="center" numberOfLines={2}>
+                  {category.label}
                 </AppText>
-              )
-            ) : (
-              <View style={styles.nearbyPrompt}>
-                <AppText color="textSecondary">
-                  Share your location to see providers close to you.
-                </AppText>
-                <AppButton
-                  title="Show providers near me"
-                  icon="navigate-outline"
-                  variant="secondary"
-                  onPress={location.requestLocation}
-                  loading={location.status === 'locating'}
-                />
-                {location.message && (
-                  <AppText variant="caption" color="warning">
-                    {location.message}
+              </Pressable>
+            ))}
+          </View>
+        </View>
+
+        {servicesQuery.isLoading ? (
+          <LoadingState message="Loading services..." />
+        ) : servicesQuery.isError && !servicesQuery.data ? (
+          <ErrorState
+            message={getErrorMessage(servicesQuery.error)}
+            onRetry={() => servicesQuery.refetch()}
+            retrying={servicesQuery.isFetching}
+          />
+        ) : services.length === 0 ? (
+          <AppText color="textSecondary" align="center">
+            No services have been listed yet. Check back soon.
+          </AppText>
+        ) : (
+          <>
+            <View style={styles.section}>
+              <SectionHeader title="Near you" />
+              {location.coords ? (
+                nearby.length > 0 ? (
+                  nearby.map(({ service, distance }) => (
+                    <ServiceCard key={service.serviceId} service={service} distanceKm={distance} />
+                  ))
+                ) : (
+                  <AppText color="textSecondary">
+                    No providers have pinned a location within {NEARBY_RADIUS_KM} km of you yet.
                   </AppText>
-                )}
+                )
+              ) : (
+                <View style={styles.nearbyPrompt}>
+                  <View style={styles.nearbyIcon}>
+                    <Ionicons name="navigate" size={22} color={colors.primary} />
+                  </View>
+                  <AppText variant="bodyStrong" align="center">
+                    Find help close to home
+                  </AppText>
+                  <AppText color="textSecondary" align="center">
+                    Share your location to see providers near you.
+                  </AppText>
+                  <AppButton
+                    title="Show providers near me"
+                    icon="navigate-outline"
+                    onPress={location.requestLocation}
+                    loading={location.status === 'locating'}
+                  />
+                  {location.message && (
+                    <AppText variant="caption" color="warning" align="center">
+                      {location.message}
+                    </AppText>
+                  )}
+                </View>
+              )}
+            </View>
+
+            {featured.length > 0 && (
+              <View style={styles.section}>
+                <SectionHeader title="Featured" />
+                {featured.map((service) => (
+                  <ServiceCard key={service.serviceId} service={service} />
+                ))}
               </View>
             )}
-          </View>
 
-          {featured.length > 0 && (
             <View style={styles.section}>
-              <SectionHeader title="Featured" />
-              {featured.map((service) => (
+              <SectionHeader
+                title="Recently added"
+                actionLabel="See all"
+                onAction={() => router.navigate('/explore')}
+              />
+              {recent.map((service) => (
                 <ServiceCard key={service.serviceId} service={service} />
               ))}
             </View>
-          )}
-
-          <View style={styles.section}>
-            <SectionHeader
-              title="Recently added"
-              actionLabel="See all"
-              onAction={() => router.navigate('/explore')}
-            />
-            {recent.map((service) => (
-              <ServiceCard key={service.serviceId} service={service} />
-            ))}
-          </View>
-        </>
-      )}
+          </>
+        )}
+      </View>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
+  content: { padding: spacing.lg, gap: spacing.xl },
   greetingRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
-  categoryGrid: { flexDirection: 'row', flexWrap: 'wrap', rowGap: spacing.md },
+  slogan: { gap: spacing.xxs },
+  avatarRing: {
+    padding: 2,
+    borderRadius: radius.pill,
+    backgroundColor: 'rgba(255, 255, 255, 0.35)',
+  },
+  categoryGrid: { flexDirection: 'row', flexWrap: 'wrap', rowGap: spacing.lg },
   categoryTile: { width: '33.33%', alignItems: 'center', gap: spacing.xs },
   categoryIcon: {
-    width: 52,
-    height: 52,
+    width: 58,
+    height: 58,
     borderRadius: radius.lg,
-    backgroundColor: colors.primaryLight,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  pressed: { opacity: 0.7 },
   section: { gap: spacing.md },
   nearbyPrompt: {
-    gap: spacing.md,
-    padding: spacing.lg,
+    alignItems: 'center',
+    gap: spacing.sm,
+    padding: spacing.xl,
     borderRadius: radius.lg,
     backgroundColor: colors.surface,
-    borderWidth: 1,
+    borderWidth: StyleSheet.hairlineWidth,
     borderColor: colors.border,
+  },
+  nearbyIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: colors.primaryLight,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

@@ -31,8 +31,10 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.border,
     padding: spacing.lg,
     ...shadows.card,
   },
-  pressed: { opacity: 0.9, transform: [{ scale: 0.99 }] },
+  pressed: { opacity: 0.92, transform: [{ scale: 0.985 }] },
 });

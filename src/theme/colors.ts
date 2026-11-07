@@ -7,22 +7,24 @@
 export const colors = {
   primary: '#1F5F3F',
   primaryDark: '#164530',
-  primaryLight: '#E7F1EB',
+  primaryLight: '#E4F0E8',
 
   accentRed: '#C8102E',
   accentGold: '#E8A317',
   accentGoldLight: '#FDF3DC',
   accentBlack: '#1A1A1A',
 
-  background: '#F7F8F6',
+  background: '#F4F6F3',
   surface: '#FFFFFF',
-  surfaceMuted: '#EFF1EE',
-  border: '#DDE2DC',
+  surfaceMuted: '#EEF2EE',
+  border: '#E3E8E2',
 
-  textPrimary: '#1A1F1C',
-  textSecondary: '#5B6660',
+  textPrimary: '#15201A',
+  textSecondary: '#56625B',
   textMuted: '#8A948E',
   textOnPrimary: '#FFFFFF',
+  /** Secondary text on the green header banners. */
+  textOnPrimaryMuted: 'rgba(255, 255, 255, 0.78)',
 
   success: '#2E7D32',
   successLight: '#E8F5E9',

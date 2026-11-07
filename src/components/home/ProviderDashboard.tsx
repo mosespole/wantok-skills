@@ -3,7 +3,15 @@ import { router, type Href } from 'expo-router';
 import type { ComponentProps } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import { AppText, Avatar, Card, ErrorState, Screen, SectionHeader } from '@/components/common';
+import {
+  AppText,
+  Avatar,
+  Card,
+  ErrorState,
+  HeaderBanner,
+  Screen,
+  SectionHeader,
+} from '@/components/common';
 import { getCategoryLabel } from '@/constants/categories';
 import { useAuth } from '@/hooks/useAuth';
 import { useMyServices } from '@/hooks/useServices';
@@ -12,12 +20,32 @@ import { getErrorMessage } from '@/utils/errors';
 
 type IconName = ComponentProps<typeof Ionicons>['name'];
 
-function StatTile({ label, value }: { label: string; value: string }) {
+function StatTile({
+  label,
+  value,
+  icon,
+  tone,
+}: {
+  label: string;
+  value: string;
+  icon: IconName;
+  tone: 'success' | 'warning';
+}) {
   return (
     <Card style={styles.statTile}>
-      <AppText variant="display" color="primary">
-        {value}
-      </AppText>
+      <View
+        style={[
+          styles.statIcon,
+          { backgroundColor: tone === 'success' ? colors.successLight : colors.warningLight },
+        ]}
+      >
+        <Ionicons
+          name={icon}
+          size={18}
+          color={tone === 'success' ? colors.success : colors.warning}
+        />
+      </View>
+      <AppText variant="display">{value}</AppText>
       <AppText variant="caption" color="textSecondary">
         {label}
       </AppText>
@@ -25,11 +53,25 @@ function StatTile({ label, value }: { label: string; value: string }) {
   );
 }
 
-function ActionRow({ icon, title, href }: { icon: IconName; title: string; href: Href }) {
+function ActionRow({
+  icon,
+  title,
+  href,
+  last = false,
+}: {
+  icon: IconName;
+  title: string;
+  href: Href;
+  last?: boolean;
+}) {
   return (
     <Pressable
       onPress={() => router.push(href)}
-      style={({ pressed }) => [styles.actionRow, pressed && styles.pressed]}
+      style={({ pressed }) => [
+        styles.actionRow,
+        !last && styles.actionDivider,
+        pressed && styles.pressed,
+      ]}
       accessibilityRole="button"
       accessibilityLabel={title}
     >
@@ -66,62 +108,90 @@ export function ProviderDashboard() {
 
   return (
     <Screen
-      edges={['top']}
+      edges={[]}
+      padded={false}
       onRefresh={() => servicesQuery.refetch()}
       refreshing={servicesQuery.isRefetching}
     >
-      <AppText variant="title">Dashboard</AppText>
-
-      <Card style={styles.profileCard}>
-        <Avatar name={profile.fullName} imageUrl={profile.profileImageUrl} size={64} />
-        <View style={styles.flex}>
-          <AppText variant="subtitle">{profile.fullName}</AppText>
-          <AppText variant="caption" color="primary">
-            {profile.skillCategory ? getCategoryLabel(profile.skillCategory) : 'Service Provider'}
-          </AppText>
-          {profile.locationName !== '' && (
-            <AppText variant="caption" color="textSecondary">
-              {profile.locationName}
+      <HeaderBanner>
+        <AppText variant="caption" color="textOnPrimaryMuted">
+          Provider dashboard
+        </AppText>
+        <View style={styles.profileRow}>
+          <View style={styles.avatarRing}>
+            <Avatar name={profile.fullName} imageUrl={profile.profileImageUrl} size={60} />
+          </View>
+          <View style={styles.flex}>
+            <AppText variant="title" color="textOnPrimary" numberOfLines={1}>
+              {profile.fullName}
             </AppText>
-          )}
+            <View style={styles.skillChip}>
+              <AppText variant="label" color="primary">
+                {profile.skillCategory
+                  ? getCategoryLabel(profile.skillCategory)
+                  : 'Service Provider'}
+              </AppText>
+            </View>
+            {profile.locationName !== '' && (
+              <View style={styles.locationRow}>
+                <Ionicons name="location-outline" size={14} color={colors.textOnPrimaryMuted} />
+                <AppText variant="caption" color="textOnPrimaryMuted" numberOfLines={1}>
+                  {profile.locationName}
+                </AppText>
+              </View>
+            )}
+          </View>
         </View>
-      </Card>
+      </HeaderBanner>
 
-      {missing.length > 0 && (
-        <Pressable
-          onPress={() => router.push('/edit-profile')}
-          style={styles.tip}
-          accessibilityRole="button"
-        >
-          <Ionicons name="sparkles-outline" size={20} color={colors.warning} />
-          <AppText variant="caption" style={styles.flex}>
-            Customers trust complete profiles. Add {missing.join(', ')}.
-          </AppText>
-        </Pressable>
-      )}
+      <View style={styles.content}>
+        {missing.length > 0 && (
+          <Pressable
+            onPress={() => router.push('/edit-profile')}
+            style={styles.tip}
+            accessibilityRole="button"
+          >
+            <Ionicons name="sparkles-outline" size={20} color={colors.warning} />
+            <AppText variant="caption" style={styles.flex}>
+              Customers trust complete profiles. Add {missing.join(', ')}.
+            </AppText>
+            <Ionicons name="chevron-forward" size={18} color={colors.warning} />
+          </Pressable>
+        )}
 
-      {servicesQuery.isError && !servicesQuery.data ? (
-        <ErrorState
-          message={getErrorMessage(servicesQuery.error)}
-          onRetry={() => servicesQuery.refetch()}
-          retrying={servicesQuery.isFetching}
-        />
-      ) : (
-        <View style={styles.stats}>
-          <StatTile label="Active listings" value={countText(activeCount)} />
-          <StatTile label="Paused" value={countText(pausedCount)} />
+        {servicesQuery.isError && !servicesQuery.data ? (
+          <ErrorState
+            message={getErrorMessage(servicesQuery.error)}
+            onRetry={() => servicesQuery.refetch()}
+            retrying={servicesQuery.isFetching}
+          />
+        ) : (
+          <View style={styles.stats}>
+            <StatTile
+              label="Active listings"
+              value={countText(activeCount)}
+              icon="checkmark-circle"
+              tone="success"
+            />
+            <StatTile
+              label="Paused"
+              value={countText(pausedCount)}
+              icon="pause-circle"
+              tone="warning"
+            />
+          </View>
+        )}
+
+        <View>
+          <SectionHeader title="Manage" />
+          <Card style={styles.actions}>
+            <ActionRow icon="add-circle-outline" title="Create a listing" href="/create-service" />
+            <ActionRow icon="briefcase-outline" title="Manage my services" href="/my-services" />
+            <ActionRow icon="images-outline" title="My past work gallery" href="/my-work" />
+            <ActionRow icon="person-circle-outline" title="Edit my profile" href="/edit-profile" />
+            <ActionRow icon="search-outline" title="Browse the marketplace" href="/search" last />
+          </Card>
         </View>
-      )}
-
-      <View>
-        <SectionHeader title="Manage" />
-        <Card style={styles.actions}>
-          <ActionRow icon="add-circle-outline" title="Create a listing" href="/create-service" />
-          <ActionRow icon="briefcase-outline" title="Manage my services" href="/my-services" />
-          <ActionRow icon="images-outline" title="My past work gallery" href="/my-work" />
-          <ActionRow icon="person-circle-outline" title="Edit my profile" href="/edit-profile" />
-          <ActionRow icon="search-outline" title="Browse the marketplace" href="/search" />
-        </Card>
       </View>
     </Screen>
   );
@@ -129,7 +199,27 @@ export function ProviderDashboard() {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  profileCard: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
+  content: { padding: spacing.lg, gap: spacing.xl },
+  profileRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.lg },
+  avatarRing: {
+    padding: 3,
+    borderRadius: radius.pill,
+    backgroundColor: 'rgba(255, 255, 255, 0.35)',
+  },
+  skillChip: {
+    alignSelf: 'flex-start',
+    marginTop: spacing.xs,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xxs,
+    borderRadius: radius.pill,
+    backgroundColor: colors.surface,
+  },
+  locationRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xxs,
+    marginTop: spacing.xs,
+  },
   tip: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -140,6 +230,14 @@ const styles = StyleSheet.create({
   },
   stats: { flexDirection: 'row', gap: spacing.md },
   statTile: { flex: 1, gap: spacing.xxs },
+  statIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.xs,
+  },
   actions: { paddingVertical: spacing.xs },
   actionRow: {
     flexDirection: 'row',
@@ -147,9 +245,13 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     paddingVertical: spacing.md,
   },
+  actionDivider: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.border,
+  },
   actionIcon: {
-    width: 36,
-    height: 36,
+    width: 38,
+    height: 38,
     borderRadius: radius.md,
     backgroundColor: colors.primaryLight,
     alignItems: 'center',

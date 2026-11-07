@@ -1,3 +1,11 @@
+import {
+  PlusJakartaSans_400Regular,
+  PlusJakartaSans_500Medium,
+  PlusJakartaSans_600SemiBold,
+  PlusJakartaSans_700Bold,
+  PlusJakartaSans_800ExtraBold,
+  useFonts,
+} from '@expo-google-fonts/plus-jakarta-sans';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { SplashScreen, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -22,12 +30,22 @@ const queryClient = new QueryClient({
 });
 
 export default function RootLayout() {
+  // The app's bundled font. If it fails to load, the app still opens with the system font.
+  const [fontsLoaded, fontError] = useFonts({
+    PlusJakartaSans_400Regular,
+    PlusJakartaSans_500Medium,
+    PlusJakartaSans_600SemiBold,
+    PlusJakartaSans_700Bold,
+    PlusJakartaSans_800ExtraBold,
+  });
+  const fontsReady = fontsLoaded || fontError !== null;
+
   return (
     <SafeAreaProvider>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <StatusBar style="dark" />
-          <RootNavigator />
+          {fontsReady ? <RootNavigator /> : null}
         </AuthProvider>
       </QueryClientProvider>
     </SafeAreaProvider>
@@ -37,6 +55,7 @@ export default function RootLayout() {
 /**
  * Authentication boundary. Each group is only registered while its guard is true,
  * so typing or deep-linking a URL cannot reach a screen the user is not allowed to see.
+ * Only rendered once the font has loaded, so the splash screen covers both.
  */
 function RootNavigator() {
   const { status, initialized } = useAuth();

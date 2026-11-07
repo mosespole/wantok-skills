@@ -1,19 +1,43 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import type { ComponentProps } from 'react';
+import { StyleSheet, View } from 'react-native';
 
 import { useAuth } from '@/hooks/useAuth';
-import { colors } from '@/theme';
+import { colors, fonts, radius, shadows } from '@/theme';
 
 type IconName = ComponentProps<typeof Ionicons>['name'];
 type IconColor = ComponentProps<typeof Ionicons>['color'];
 
+/** Tab icon with a soft green pill behind it when the tab is active. */
 function tabIcon(name: IconName, focusedName: IconName) {
-  function TabIcon({ color, focused, size }: { color: IconColor; focused: boolean; size: number }) {
-    return <Ionicons name={focused ? focusedName : name} color={color} size={size} />;
+  function TabIcon({ color, focused }: { color: IconColor; focused: boolean; size: number }) {
+    return (
+      <View style={[styles.iconPill, focused && styles.iconPillActive]}>
+        <Ionicons name={focused ? focusedName : name} color={color} size={22} />
+      </View>
+    );
   }
   return TabIcon;
 }
+
+const styles = StyleSheet.create({
+  iconPill: {
+    width: 56,
+    height: 30,
+    borderRadius: radius.pill,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconPillActive: { backgroundColor: colors.primaryLight },
+  tabBar: {
+    backgroundColor: colors.surface,
+    borderTopWidth: 0,
+    paddingTop: 6,
+    ...shadows.raised,
+  },
+  label: { fontFamily: fonts.semibold, fontSize: 11, marginTop: 2 },
+});
 
 /** Bottom tabs. The first tab is the customer Home or the provider Dashboard. */
 export default function TabsLayout() {
@@ -26,8 +50,8 @@ export default function TabsLayout() {
         headerShown: false,
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textMuted,
-        tabBarStyle: { backgroundColor: colors.surface, borderTopColor: colors.border },
-        tabBarLabelStyle: { fontSize: 12, fontWeight: '600' },
+        tabBarStyle: styles.tabBar,
+        tabBarLabelStyle: styles.label,
       }}
     >
       <Tabs.Screen
