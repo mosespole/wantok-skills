@@ -171,15 +171,19 @@ npx eas-cli@latest build --platform android --profile production   # AAB
 
 ## Screenshots
 
-`[ADD SCREENSHOTS taken from the running app to docs/screenshots/ and update the paths below.]`
+Taken on an Android phone from the EAS-built APK (Expo Go for the past-work screens). The phone uses a handwriting-style system font, which the app follows.
 
-| Welcome                                  | Register                                   | Customer Home                      | Explore                                  |
-| ---------------------------------------- | ------------------------------------------ | ---------------------------------- | ---------------------------------------- |
-| ![Welcome](docs/screenshots/welcome.png) | ![Register](docs/screenshots/register.png) | ![Home](docs/screenshots/home.png) | ![Explore](docs/screenshots/explore.png) |
+| Welcome                                                            | Register                                                             | Customer Home                                                         | Near you                                                                  |
+| ------------------------------------------------------------------ | -------------------------------------------------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| <img src="docs/screenshots/welcome.jpg" alt="Welcome" width="200"> | <img src="docs/screenshots/register.jpg" alt="Register" width="200"> | <img src="docs/screenshots/home.jpg" alt="Customer Home" width="200"> | <img src="docs/screenshots/home-near-you.jpg" alt="Near you" width="200"> |
 
-| Listing details                          | Map                              | Provider dashboard                           | Create listing                                 |
-| ---------------------------------------- | -------------------------------- | -------------------------------------------- | ---------------------------------------------- |
-| ![Listing](docs/screenshots/listing.png) | ![Map](docs/screenshots/map.png) | ![Dashboard](docs/screenshots/dashboard.png) | ![Create](docs/screenshots/create-listing.png) |
+| Explore                                                            | Provider dashboard                                                              | Create listing                                                                   | Edit profile                                                                 |
+| ------------------------------------------------------------------ | ------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| <img src="docs/screenshots/explore.jpg" alt="Explore" width="200"> | <img src="docs/screenshots/dashboard.jpg" alt="Provider dashboard" width="200"> | <img src="docs/screenshots/create-listing.jpg" alt="Create listing" width="200"> | <img src="docs/screenshots/edit-profile.jpg" alt="Edit profile" width="200"> |
+
+| My past work                                                                 | Past work details                                                                      | Dashboard (Expo Go)                                                                      |
+| ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| <img src="docs/screenshots/my-past-work.jpg" alt="My past work" width="200"> | <img src="docs/screenshots/past-work-details.jpg" alt="Past work details" width="200"> | <img src="docs/screenshots/dashboard-expo-go.jpg" alt="Dashboard (Expo Go)" width="200"> |
 
 ---
 
