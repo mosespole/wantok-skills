@@ -3,14 +3,28 @@ import { StyleSheet, View } from 'react-native';
 
 import { colors, radius } from '@/theme';
 
+interface BrandMarkProps {
+  size?: number;
+  /** White tile with a green icon, for use on the green header banners. */
+  inverted?: boolean;
+}
+
 /** App logo mark: a community icon on forest green with a gold accent bar. */
-export function BrandMark({ size = 72 }: { size?: number }) {
+export function BrandMark({ size = 72, inverted = false }: BrandMarkProps) {
   return (
     <View
-      style={[styles.mark, { width: size, height: size, borderRadius: size * 0.28 }]}
+      style={[
+        styles.mark,
+        { width: size, height: size, borderRadius: size * 0.28 },
+        inverted && styles.inverted,
+      ]}
       accessibilityLabel="Wantok Skills logo"
     >
-      <Ionicons name="people" size={size * 0.5} color={colors.textOnPrimary} />
+      <Ionicons
+        name="people"
+        size={size * 0.5}
+        color={inverted ? colors.primary : colors.textOnPrimary}
+      />
       <View style={[styles.accent, { height: size * 0.08 }]} />
     </View>
   );
@@ -23,6 +37,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     overflow: 'hidden',
   },
+  inverted: { backgroundColor: colors.surface },
   accent: {
     position: 'absolute',
     bottom: 0,

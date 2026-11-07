@@ -11,27 +11,27 @@ export const spacing = {
 } as const;
 
 export const radius = {
-  sm: 6,
-  md: 10,
-  lg: 16,
-  xl: 24,
+  sm: 8,
+  md: 12,
+  lg: 18,
+  xl: 28,
   pill: 999,
 } as const;
 
-/** Card elevation. Android uses `elevation`; iOS uses the shadow props. */
+/** Soft, green-tinted elevation. Android uses `elevation`; iOS uses the shadow props. */
 export const shadows = {
   card: {
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowColor: '#0F2A1D',
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.06,
-    shadowRadius: 8,
+    shadowRadius: 12,
     elevation: 2,
   },
   raised: {
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.12,
-    shadowRadius: 12,
-    elevation: 6,
+    shadowColor: '#0F2A1D',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.14,
+    shadowRadius: 20,
+    elevation: 8,
   },
 } as const;

@@ -4,7 +4,15 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { AppButton, AppText, Avatar, Card, ConfirmDialog, Screen } from '@/components/common';
+import {
+  AppButton,
+  AppText,
+  Avatar,
+  Card,
+  ConfirmDialog,
+  HeaderBanner,
+  Screen,
+} from '@/components/common';
 import { getCategoryLabel } from '@/constants/categories';
 import { useAuth } from '@/hooks/useAuth';
 import { colors, spacing } from '@/theme';
@@ -57,10 +65,12 @@ export default function ProfileScreen() {
   };
 
   return (
-    <Screen edges={['top']}>
-      <View style={styles.header}>
-        <Avatar name={profile.fullName} imageUrl={profile.profileImageUrl} size={88} />
-        <AppText variant="title" align="center">
+    <Screen edges={[]} padded={false}>
+      <HeaderBanner style={styles.header}>
+        <View style={styles.avatarRing}>
+          <Avatar name={profile.fullName} imageUrl={profile.profileImageUrl} size={88} />
+        </View>
+        <AppText variant="title" color="textOnPrimary" align="center">
           {profile.fullName}
         </AppText>
         <View style={styles.roleBadge}>
@@ -68,67 +78,75 @@ export default function ProfileScreen() {
             {isProvider ? 'Service Provider' : 'Customer'}
           </AppText>
         </View>
-      </View>
+      </HeaderBanner>
 
-      <Card style={styles.card}>
-        <InfoRow icon="mail-outline" label="Email" value={profile.email} />
-        <InfoRow icon="call-outline" label="Phone" value={formatPhone(profile.phoneNumber)} />
-        {isProvider && (
+      <View style={styles.content}>
+        <Card style={styles.card}>
+          <InfoRow icon="mail-outline" label="Email" value={profile.email} />
+          <InfoRow icon="call-outline" label="Phone" value={formatPhone(profile.phoneNumber)} />
+          {isProvider && (
+            <InfoRow
+              icon="construct-outline"
+              label="Main skill"
+              value={profile.skillCategory ? getCategoryLabel(profile.skillCategory) : 'Not set'}
+            />
+          )}
           <InfoRow
-            icon="construct-outline"
-            label="Main skill"
-            value={profile.skillCategory ? getCategoryLabel(profile.skillCategory) : 'Not set'}
+            icon="location-outline"
+            label="Location"
+            value={profile.locationName || 'Not set'}
           />
+        </Card>
+
+        {logoutError && (
+          <AppText color="error" align="center">
+            {logoutError}
+          </AppText>
         )}
-        <InfoRow
-          icon="location-outline"
-          label="Location"
-          value={profile.locationName || 'Not set'}
+
+        <AppButton
+          title="Edit profile"
+          icon="create-outline"
+          variant="secondary"
+          onPress={() => router.push('/edit-profile')}
         />
-      </Card>
 
-      {logoutError && (
-        <AppText color="error" align="center">
-          {logoutError}
-        </AppText>
-      )}
+        <AppButton
+          title="Log out"
+          variant="outline"
+          icon="log-out-outline"
+          onPress={() => setConfirmVisible(true)}
+        />
 
-      <AppButton
-        title="Edit profile"
-        icon="create-outline"
-        variant="secondary"
-        onPress={() => router.push('/edit-profile')}
-      />
-
-      <AppButton
-        title="Log out"
-        variant="outline"
-        icon="log-out-outline"
-        onPress={() => setConfirmVisible(true)}
-      />
-
-      <ConfirmDialog
-        visible={confirmVisible}
-        title="Log out?"
-        message="You will need to log in again to use Wantok Skills."
-        confirmLabel="Log out"
-        destructive
-        loading={loggingOut}
-        onConfirm={handleLogout}
-        onCancel={() => setConfirmVisible(false)}
-      />
+        <ConfirmDialog
+          visible={confirmVisible}
+          title="Log out?"
+          message="You will need to log in again to use Wantok Skills."
+          confirmLabel="Log out"
+          destructive
+          loading={loggingOut}
+          onConfirm={handleLogout}
+          onCancel={() => setConfirmVisible(false)}
+        />
+      </View>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  header: { alignItems: 'center', gap: spacing.sm, marginTop: spacing.md },
+  header: { alignItems: 'center', gap: spacing.sm },
+  avatarRing: {
+    padding: 3,
+    borderRadius: 999,
+    backgroundColor: 'rgba(255, 255, 255, 0.35)',
+  },
   roleBadge: {
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.xs,
     borderRadius: 999,
-    backgroundColor: colors.primaryLight,
+    backgroundColor: colors.surface,
   },
+  content: { padding: spacing.lg, gap: spacing.lg },
   card: { gap: spacing.lg },
   infoRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   infoText: { flex: 1 },

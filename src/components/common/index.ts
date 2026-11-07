@@ -4,6 +4,7 @@ export { AppText } from './AppText';
 export { Avatar } from './Avatar';
 export { BrandMark } from './BrandMark';
 export { Card } from './Card';
+export { HeaderBanner } from './HeaderBanner';
 export { ConfirmDialog } from './ConfirmDialog';
 export { Screen } from './Screen';
 export { SectionHeader } from './SectionHeader';

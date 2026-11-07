@@ -87,7 +87,7 @@ export function AppButton({
 
 const styles = StyleSheet.create({
   base: {
-    minHeight: 50,
+    minHeight: 52,
     paddingHorizontal: spacing.xl,
     paddingVertical: spacing.sm,
     borderRadius: radius.md,
@@ -104,6 +104,6 @@ const styles = StyleSheet.create({
     maxWidth: '100%',
   },
   label: { flexShrink: 1 },
-  pressed: { opacity: 0.85 },
+  pressed: { opacity: 0.9, transform: [{ scale: 0.98 }] },
   disabled: { opacity: 0.55 },
 });
