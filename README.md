@@ -223,7 +223,7 @@ My personal contributions included:
 
 I take responsibility for understanding the project, its functionality, its technical decisions and the work submitted. I recognise that AI assistance supported much of the code generation, but I was responsible for directing, reviewing and evaluating that work.`
 
-`[CONFIRM: I have read and understand the code in this repository and can explain how it works.]`
+CONFIRM: I have read and understand the code in this repository and can explain how it works.
 
 ---
 
