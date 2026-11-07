@@ -18,6 +18,10 @@ export function AppText({
 }: AppTextProps) {
   return (
     <Text
+      // Android's default "highQuality" line breaking can measure a line narrower than it
+      // draws when the phone uses a custom system font (e.g. Samsung font styles), which
+      // pushes the last word onto a hidden line ("Computer Repair" showed as "Computer").
+      textBreakStrategy="simple"
       style={[typography[variant], { color: colors[color] }, align && styles[align], style]}
       {...rest}
     />

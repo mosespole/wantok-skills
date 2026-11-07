@@ -42,10 +42,12 @@ export default function MyWorkScreen() {
       <View style={styles.header}>
         <AppText color="textSecondary" style={styles.flex}>
           {items.length} of {MAX_PORTFOLIO_ITEMS} projects. Customers see these on your profile.
+          {isFull ? ' Delete a project to add another.' : ''}
         </AppText>
       </View>
       <AppButton
-        title={isFull ? 'Gallery full: delete a project to add more' : 'Add a project'}
+        // Kept short: button labels stay on one line, so a long label would be cut off.
+        title={isFull ? 'Gallery full' : 'Add a project'}
         icon="add"
         onPress={() => router.push('/add-work')}
         disabled={isFull}
