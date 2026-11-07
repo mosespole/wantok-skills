@@ -6,7 +6,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AppButton, AppText, Avatar, Card, ErrorState, LoadingState } from '@/components/common';
 import { DataStatusNotice } from '@/components/common/DataStatusNotice';
+import { ProviderListFallback } from '@/components/map/ProviderListFallback';
 import { ProviderMap, type ProviderMapHandle } from '@/components/map/ProviderMap';
+import { NATIVE_MAP_AVAILABLE } from '@/constants/features';
 import { getCategoryLabel } from '@/constants/categories';
 import { useCurrentLocation } from '@/hooks/useLocation';
 import { useActiveServices } from '@/hooks/useServices';
@@ -66,6 +68,11 @@ export default function MapScreen() {
         retrying={servicesQuery.isFetching}
       />
     );
+  }
+
+  // Without a Google Maps key a compiled Android build would crash here; show a list instead.
+  if (!NATIVE_MAP_AVAILABLE) {
+    return <ProviderListFallback pins={pins} userCoords={userCoords} />;
   }
 
   const locationProblem =

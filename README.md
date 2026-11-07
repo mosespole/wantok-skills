@@ -150,7 +150,7 @@ Repeat for every required variable in the table above.
 npx eas-cli@latest env:create --name GOOGLE_MAPS_ANDROID_API_KEY --value <key> --environment preview --environment production --visibility sensitive
 ```
 
-Without it the map in the APK/AAB is blank (see Known limitations).
+Without it, Google Maps would crash the APK/AAB, so the app detects the missing key (`extra.googleMapsEnabled`) and the Map tab shows a list of providers instead (see Known limitations).
 
 ### Build commands
 
@@ -180,7 +180,7 @@ npx eas-cli@latest build --platform android --profile production   # AAB
 - **Photos are stored inside Firestore**, not Firebase Storage, because the free Spark plan has no Storage. Each photo is shrunk on the phone (profile pictures about 320 px, past-work photos about 1024 px) to fit Firestore's 1 MiB document limit, so image quality is reduced. Optional listing photos (Firebase Storage) stay switched off until `EXPO_PUBLIC_FIREBASE_STORAGE_ENABLED=true`.
 - **Reviews are not verified.** Any customer can review any provider once; the app cannot prove the job took place. Ratings are not shown on search results for providers without listings (to avoid one query per provider).
 - **Search runs on the phone.** Firestore has no full-text search, so the app downloads up to 300 active listings and filters them locally. This is fine for a small marketplace but would not scale to thousands of listings.
-- **The map is blank in the compiled APK/AAB.** A compiled Android build needs a Google Maps API key, and Google requires a billing account (a payment card) to issue one, which was not available for this project. The app is set up to use a key (`app.config.js` reads `GOOGLE_MAPS_ANDROID_API_KEY` at build time), but the submitted builds were made without it. Every other screen works in the APK; the map works fully in Expo Go, which needs no key. The web version shows a message instead of a map.
+- **The compiled APK/AAB shows a provider list instead of a map.** A compiled Android build needs a Google Maps API key, and Google requires a billing account (a payment card) to issue one, which was not available for this project. The app is set up to use a key (`app.config.js` reads `GOOGLE_MAPS_ANDROID_API_KEY` at build time), but the submitted builds were made without it. Google Maps crashes a compiled Android app that has no key (found when testing the first APK), so without a key the Map tab lists the same providers instead, nearest first when location is allowed. Every other screen works in the APK; the map works fully in Expo Go, which needs no key. The web version shows a message instead of a map.
 - **Offline support is read-only and partial.** The latest active listings and your own profile are saved on the phone (AsyncStorage) and shown with an "offline / saved" notice when Firestore cannot be reached. Listing details, provider pages, My Services and Favourites still need a connection, and creating, editing, deleting or favouriting is blocked while offline with a clear message (nothing is queued).
 - **Provider emails are visible to signed-in users**, because provider profile documents (readable for the marketplace) include the email field.
 - **"Featured" listings** are simply the most complete listings (photo, price, provider photo), not the highest rated. There are no payments or in-app chat; customers contact providers by phone or WhatsApp.
