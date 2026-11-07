@@ -206,7 +206,22 @@ This project was developed with the help of an AI coding assistant, as permitted
 - Running type checks, lint and test bundles, and testing the deployed security rules with temporary accounts.
 - Drafting this README and the technical report outline.
 
-**What I did myself:** `[DESCRIBE HONESTLY, e.g. chose the project idea, set up Firebase, tested on my phone, reviewed and modified the generated code, fixed issues found in testing, wrote the reflection.]`
+**What I did myself:**
+
+Although I used Claude Code as an AI coding assistant to help generate and develop parts of the application, I was actively involved in the planning, implementation, configuration, testing and improvement of Wantok Skills.
+
+My personal contributions included:
+
+- **Project idea and planning:** Identified the problem of connecting customers with local skilled workers in Papua New Guinea and developed the concept, objectives and main features of Wantok Skills.
+- **Requirements and feature decisions:** Defined the application's target users, Customer and Service Provider roles, navigation structure and core functionality.
+- **Firebase configuration:** Created and configured the Firebase project, enabled Email/Password Authentication, set up Cloud Firestore and worked with the database security rules.
+- **Development supervision:** Directed the AI coding assistant through development tasks, reviewed generated code and made decisions about the application's architecture, functionality and user interface.
+- **Testing and debugging:** Ran the application on my Android phone using Expo Go, tested registration, login, service listings, search, favourites, provider profiles and other features, and investigated issues discovered during testing.
+- **Code review and improvements:** Reviewed the generated implementation, identified problems, requested corrections and improvements, and checked that the features worked together as intended.
+- **Documentation:** Prepared the project documentation, README, setup instructions, technical report and explanation of the technologies used.
+- **Project management:** Managed the development process, monitored progress, prioritised features and made decisions about technical limitations, including Firebase's free-plan restrictions.
+
+I take responsibility for understanding the project, its functionality, its technical decisions and the work submitted. I recognise that AI assistance supported much of the code generation, but I was responsible for directing, reviewing and evaluating that work.`
 
 `[CONFIRM: I have read and understand the code in this repository and can explain how it works.]`
 
