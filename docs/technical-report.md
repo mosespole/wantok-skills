@@ -47,11 +47,11 @@ The role is chosen at registration and cannot be changed afterwards (enforced in
 
 **Could-have**
 
-| #   | User story                                                                                                        | Status                                                             |
-| --- | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| C1  | As a **provider**, I want to upload a profile photo and listing photos, so that my services look trustworthy.     | Built; disabled on the Spark plan (needs Firebase Storage / Blaze) |
-| C2  | As a **customer**, I want to rate and review providers, so that I can choose reliable people.                     | Not implemented                                                    |
-| C3  | As a **customer**, I want to chat with a provider inside the app, so that I do not need to share my phone number. | Not implemented (WhatsApp/phone used instead)                      |
+| #   | User story                                                                                                        | Status                                                                                                                                                              |
+| --- | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| C1  | As a **provider**, I want to upload a profile photo and listing photos, so that my services look trustworthy.     | Partially: profile and past-work photos work (compressed, stored in Firestore); listing photos built but disabled on the Spark plan (need Firebase Storage / Blaze) |
+| C2  | As a **customer**, I want to rate and review providers, so that I can choose reliable people.                     | Implemented: one 1-5 star review per customer per provider, with optional comment                                                                                   |
+| C3  | As a **customer**, I want to chat with a provider inside the app, so that I do not need to share my phone number. | Not implemented (WhatsApp/phone used instead)                                                                                                                       |
 
 ---
 
@@ -280,7 +280,7 @@ Sources for limits: Firebase Firestore quotas (firebase.google.com/docs/firestor
 **Configuration changes required for the compiled build** (record what you actually did):
 
 - Firebase values added as EAS environment variables for `preview` and `production`, because `.env` is git-ignored and not uploaded to EAS.
-- `[Google Maps API key added to the react-native-maps config plugin for Android: yes / no]`
+- Google Maps API key: **not added**. Google requires a billing account (payment card) to issue a Maps key, which was not available, so the map is blank in the compiled APK/AAB and was demonstrated in Expo Go. `app.config.js` already reads `GOOGLE_MAPS_ANDROID_API_KEY`, so adding the key later only needs an EAS variable and a rebuild.
 - `app.json`: package `com.wantokskills.app`, `versionCode` 1, location and photo permission texts, camera and microphone permissions blocked.
 - `[Anything else that was needed, e.g. versionCode increments, fixes after a failed build]`
 
@@ -296,14 +296,14 @@ Sources for limits: Firebase Firestore quotas (firebase.google.com/docs/firestor
 
 **Prompts and facts you can draw on:**
 
-- **What you built:** an Expo SDK 57 Android marketplace with Firebase Auth and Firestore, role-based navigation, listing CRUD, search, favourites, a map using real device location, and call/WhatsApp contact.
+- **What you built:** an Expo SDK 57 Android marketplace with Firebase Auth and Firestore, role-based navigation, listing CRUD, search, favourites, reviews and star ratings, a past-work photo gallery, a map using real device location, and call/WhatsApp contact.
 - **What broke:**
   - The web build crashed (`codegenNativeComponent is not a function`) because `react-native-maps` has no web version and static web rendering loads every screen. Fixed with a platform-specific `ProviderMap.web.tsx`.
   - Expo Go from the Play Store was for SDK 58 but the project uses the required SDK 57, so the SDK 57 Expo Go had to be installed manually.
   - TypeScript could not find `getReactNativePersistence` from `firebase/auth` because of how the package declares its types; fixed with a `paths` entry in `tsconfig.json`.
   - Git line-ending conversion (CRLF) made Prettier fail; fixed with `.gitattributes`.
   - `[Anything that broke during your own testing]`
-- **What you cut and why:** Firebase Storage photo uploads (needs the paid Blaze plan, so the feature is built but switched off); ratings/reviews and in-app chat (scope; WhatsApp already solves contact for PNG users); server-side search (Firestore has none, so search runs on the device).
+- **What you cut and why:** Firebase Storage photo uploads (needs the paid Blaze plan, so the feature is built but switched off); in-app chat (scope; WhatsApp already solves contact for PNG users); the Google Maps key for compiled builds (Google requires a payment card for billing, so the map is shown in Expo Go instead); server-side search (Firestore has none, so search runs on the device).
 - **What you would do differently:** e.g. commit after each phase from the start; set up the Firebase emulator and automated rules tests early; confirm the Expo Go version before starting; decide the Firebase plan before designing features.
 - **What you learned:** e.g. why security rules, not hidden buttons, protect data; how Expo Router protected routes form an authentication boundary; the difference between Expo Go and compiled builds (API keys, environment variables); `[your own points]`.
 
