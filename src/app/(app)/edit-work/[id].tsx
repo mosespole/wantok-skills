@@ -31,6 +31,9 @@ export default function EditWorkScreen() {
 
   const item = itemQuery.data;
 
+  // After a delete the item query is cleared; render nothing while navigating back,
+  // instead of briefly flashing "Project unavailable".
+  if (deleteItem.isSuccess) return null;
   if (itemQuery.isLoading) return <LoadingState message="Loading project..." />;
   if (itemQuery.isError) {
     return (

@@ -1,6 +1,6 @@
 # Wantok Skills: Technical Report
 
-**Student:** `[YOUR FULL NAME]` · **Student number:** `[YOUR STUDENT NUMBER]` · **Course:** IS325 Mobile App Development · **Date:** `[DATE]`
+**Student:** Moses POLE · **Student number:** 24202215 · **Course:** IS325 Mobile App Development · **Date:** 7 November 2026
 
 > **How to use this draft:** this file is the source for the PDF you submit. Items in `[SQUARE BRACKETS]` are evidence only you can supply (build IDs, screenshots, your reflection). Diagrams are written in Mermaid. GitHub renders them, or paste them into <https://mermaid.live> and export PNGs for the PDF.
 
@@ -248,7 +248,25 @@ Typing or deep-linking a URL to a screen whose guard is false redirects instead 
 - `portfolio`: signed-in users read; only providers create, under their own UID; owner-only edit/delete; photo must be a JPEG data URI under 700 KB; completion date cannot be in the future.
 - `reviews`: signed-in users read; only customers create, one per provider (ID `uid_providerId`), never for themselves, only for real providers, and `customerName` must equal their profile name; rating must be an integer 1-5; the author may edit only stars/comment, and delete their own review.
 
-`[EVIDENCE: Rules were tested on the live project on 2026-11-05 using a temporary signed-in account (deleted afterwards): active-listings query → 200; unfiltered listing query → 403; read own profile → allowed (404, no document); anonymous query → 403. Add your own two-account tests here, e.g. customer attempting to edit a provider's listing.]`
+**Evidence.** On 2026-11-05 the rules were first checked with a temporary signed-in account (deleted afterwards): active-listings query → allowed; unfiltered listing query → denied; read own profile → allowed; signed-out query → denied.
+
+On 2026-11-07 a two-account test was run against the live project with `scripts/test-security-rules.mjs`, signing in as demo customer and provider accounts. **13 of 13 checks behaved as expected:**
+
+| Signed in as | Attempt                                | Expected | Result  |
+| ------------ | -------------------------------------- | -------- | ------- |
+| Customer     | Edit a provider's listing              | Denied   | Denied  |
+| Customer     | Delete a provider's listing            | Denied   | Denied  |
+| Customer     | Create a listing                       | Denied   | Denied  |
+| Customer     | Change own role to provider            | Denied   | Denied  |
+| Customer     | Read another customer's profile        | Denied   | Denied  |
+| Customer     | Edit a provider's profile              | Denied   | Denied  |
+| Customer     | Post a review under another name       | Denied   | Denied  |
+| Customer     | Read a provider profile (marketplace)  | Allowed  | Allowed |
+| Provider     | Edit another provider's listing        | Denied   | Denied  |
+| Provider     | Create a listing owned by someone else | Denied   | Denied  |
+| Provider     | Review another provider                | Denied   | Denied  |
+| Provider     | Edit own listing                       | Allowed  | Allowed |
+| Signed out   | Read listings                          | Denied   | Denied  |
 
 ---
 

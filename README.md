@@ -19,6 +19,17 @@ Wantok Skills is an Android marketplace app that connects people in Papua New Gu
 
 Open the link on an Android phone and install the file. Android asks you to allow installing apps from your browser, because the APK is not from the Play Store. This build has no Google Maps key, so the Map tab lists nearby providers instead of showing a map (see [Known limitations](#known-limitations)).
 
+### Demo accounts
+
+The live project contains demo data (8 providers, 14 listings across all 9 categories, 4 customers, 15 reviews), created with `scripts/seed-demo-data.mjs`. Every demo account uses the password **`WantokDemo2026`**.
+
+| Try the app as | Email                       | Shows                                                 |
+| -------------- | --------------------------- | ----------------------------------------------------- |
+| Customer       | `customer.anna@example.com` | Home, Explore, search, favourites, writing a review   |
+| Provider       | `provider.kila@example.com` | Dashboard, My services, creating and editing listings |
+
+Other demo logins follow the same pattern: providers `provider.grace`, `john`, `mary`, `peter`, `ruth`, `samuel`, `esther`; customers `customer.david`, `lucy`, `tom` (all `@example.com`). Please do not change the demo passwords.
+
 ---
 
 ## Features
@@ -197,7 +208,7 @@ Taken on an Android phone from the EAS-built APK (Expo Go for the past-work scre
 - **Provider emails are visible to signed-in users**, because provider profile documents (readable for the marketplace) include the email field.
 - **"Featured" listings** are simply the most complete listings (photo, price, provider photo), not the highest rated. There are no payments or in-app chat; customers contact providers by phone or WhatsApp.
 - **A paused listing opened by another user** shows a "no permission" message rather than "not found".
-- **Security rules were tested manually**, not with automated emulator tests (Java was not available on the development machine).
+- **Security rules are tested against the live project, not the emulator** (Java was not available on the development machine). `scripts/test-security-rules.mjs` signs in as demo customer and provider accounts and checks 13 allowed and blocked actions; all 13 behaved as expected on 2026-11-07.
 - **Early commit history:** the first phases were committed after they were written, so individual early commits do not build on their own; `main` does.
 
 ---

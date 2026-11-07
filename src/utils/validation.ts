@@ -12,7 +12,7 @@ export const phoneSchema = z
   .string()
   .trim()
   .min(1, 'Phone number is required')
-  .refine((value) => /^[\d\s+()-]+$/.test(value), 'Use digits only')
+  .refine((value) => /^[\d\s+()-]+$/.test(value), 'Use numbers only (spaces, + and - are fine)')
   .refine((value) => {
     const local = toLocalPhoneDigits(value);
     return local.length === 7 || local.length === 8;
