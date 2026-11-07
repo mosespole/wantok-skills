@@ -62,7 +62,7 @@ export function RatingBadge({ rating }: { rating: RatingSummary | null | undefin
   return (
     <View
       style={styles.badge}
-      accessibilityLabel={`Rated ${rating.average.toFixed(1)} out of 5 from ${rating.count} reviews`}
+      accessibilityLabel={`Rated ${rating.average.toFixed(1)} out of 5 from ${rating.count} ${rating.count === 1 ? 'review' : 'reviews'}`}
     >
       <Ionicons name="star" size={14} color={colors.accentGold} />
       <AppText variant="label">{rating.average.toFixed(1)}</AppText>

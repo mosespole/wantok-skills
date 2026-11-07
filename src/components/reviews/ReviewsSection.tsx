@@ -46,7 +46,9 @@ export function ReviewsSection({ providerId, providerName }: ReviewsSectionProps
       ) : (
         summaryQuery.isSuccess && (
           <AppText color="textSecondary">
-            No reviews yet. Be the first to share your experience.
+            {canReview
+              ? 'No reviews yet. Be the first to share your experience.'
+              : 'No reviews yet.'}
           </AppText>
         )
       )}
@@ -55,9 +57,9 @@ export function ReviewsSection({ providerId, providerName }: ReviewsSectionProps
         (myReviewQuery.isLoading ? (
           <LoadingState message="Loading your review..." />
         ) : (
-          // key resets the form when the review is created or deleted.
+          // No key: remounting after the first save would hide the "review saved" message.
+          // ReviewForm clears its own fields when the review is deleted.
           <ReviewForm
-            key={myReviewQuery.data?.reviewId ?? 'new'}
             providerId={providerId}
             providerName={providerName}
             existing={myReviewQuery.data ?? null}
