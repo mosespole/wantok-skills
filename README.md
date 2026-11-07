@@ -15,7 +15,7 @@ Wantok Skills is an Android marketplace app that connects people in Papua New Gu
 
 ## Download
 
-**[Download the Android APK](https://expo.dev/artifacts/eas/iiARp8fFk4gv5VxK0UsE-vYVIj3qjArWln-ud268YUM.apk)** (version 1.0.0, built with EAS Build on 7 November 2026).
+**[Download the Android APK](https://expo.dev/artifacts/eas/Xc_U-sDqGZ0nf1ZEo4uAIVJKdaqm9s5fWBQe8aRvQy0.apk)** (version 1.0.0, built with EAS Build on 7 November 2026).
 
 Open the link on an Android phone and install the file. Android asks you to allow installing apps from your browser, because the APK is not from the Play Store. This build has no Google Maps key, so the Map tab lists nearby providers instead of showing a map (see [Known limitations](#known-limitations)).
 
