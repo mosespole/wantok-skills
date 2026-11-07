@@ -6,8 +6,8 @@ Wantok Skills is an Android marketplace app that connects people in Papua New Gu
 
 |                    |                                                            |
 | ------------------ | ---------------------------------------------------------- |
-| **Student name**   | `[YOUR FULL NAME]`                                         |
-| **Student number** | `[YOUR STUDENT NUMBER]`                                    |
+| **Student name**   | `Moses POLE`                                         |
+| **Student number** | `24202215`                                    |
 | **Course**         | IS325 Mobile App Development, PNG University of Technology |
 | **Repository**     | <https://github.com/mosespole/wantok-skills>               |
 
