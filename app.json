@@ -56,6 +56,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "926686ac-3d73-4f0b-98cd-79f193088019"
+      }
+    },
+    "owner": "mosespole.1"
   }
 }
