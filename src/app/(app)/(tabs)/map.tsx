@@ -49,10 +49,13 @@ export default function MapScreen() {
     if (coords) mapRef.current?.centreOn(coords);
   };
 
+  const selectedDistance =
+    selected && location.coords ? distanceInKm(location.coords, selected.coordinate) : null;
+  // Same wording as the listing cards: under 1 km shows as "<1 km".
   const distanceText =
-    selected && location.coords
-      ? `${Math.max(1, Math.round(distanceInKm(location.coords, selected.coordinate)))} km away`
-      : null;
+    selectedDistance === null
+      ? null
+      : `${selectedDistance < 1 ? '<1' : Math.round(selectedDistance)} km away`;
 
   if (servicesQuery.isLoading) return <LoadingState message="Loading providers..." />;
   if (servicesQuery.isError && !servicesQuery.data) {

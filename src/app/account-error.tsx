@@ -27,7 +27,13 @@ export default function AccountErrorScreen() {
         retrying={retrying}
       />
       <View style={styles.footer}>
-        <AppButton title="Log out" variant="ghost" icon="log-out-outline" onPress={logout} />
+        <AppButton
+          title="Log out"
+          variant="ghost"
+          icon="log-out-outline"
+          // A failed logout leaves the user on this screen; swallow it instead of crashing.
+          onPress={() => void logout().catch(() => undefined)}
+        />
       </View>
     </Screen>
   );

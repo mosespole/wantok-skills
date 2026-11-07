@@ -51,7 +51,7 @@ export default function TabsLayout() {
         <Tabs.Screen
           name="my-services"
           options={{
-            title: 'My Services',
+            title: 'My services',
             tabBarIcon: tabIcon('briefcase-outline', 'briefcase'),
           }}
         />

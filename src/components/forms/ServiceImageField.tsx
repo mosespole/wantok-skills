@@ -66,7 +66,13 @@ export function ServiceImageField({
           {!uploading && (
             <Pressable
               style={styles.removeButton}
-              onPress={() => onChange(currentUrl ? { type: 'remove' } : { type: 'keep' })}
+              // Removing a newly picked photo goes back to the saved one; removing the
+              // saved photo marks it for deletion.
+              onPress={() =>
+                onChange(
+                  change.type === 'replace' || !currentUrl ? { type: 'keep' } : { type: 'remove' },
+                )
+              }
               hitSlop={8}
               accessibilityRole="button"
               accessibilityLabel="Remove photo"

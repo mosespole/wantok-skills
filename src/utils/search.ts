@@ -63,6 +63,6 @@ export function filterProviders(
     ]
       .join(' ')
       .toLowerCase();
-    return text.split(/s+/).every((word) => haystack.includes(word));
+    return text.split(/\s+/).every((word) => haystack.includes(word));
   });
 }
