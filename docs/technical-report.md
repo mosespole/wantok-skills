@@ -292,8 +292,10 @@ Sources for limits: Firebase Firestore quotas (firebase.google.com/docs/firestor
 | ------------------- | ------------ | ------ | -------------------------------------- | ---------- | --------------------------------------------------------------------------- |
 | APK (1st)           | `preview`    | `.apk` | `46252ae9-558c-4eac-8c5e-807ef0fdd853` | 2026-11-07 | Built, but the app crashed when opening the Map tab (no Maps key); replaced |
 | AAB (1st)           | `production` | `.aab` | `d8544b0b-2434-4afd-b9e0-681378c78ffd` | 2026-11-07 | Cancelled: started before the map crash fix                                 |
-| **APK (submitted)** | `preview`    | `.apk` | `afa789c9-5489-4364-acf1-cb497123e150` | 2026-11-07 | Succeeded                                                                   |
-| **AAB (submitted)** | `production` | `.aab` | `113e2d25-897b-479d-9714-f21331b632e1` | 2026-11-07 | Succeeded                                                                   |
+| APK (2nd)           | `preview`    | `.apk` | `afa789c9-5489-4364-acf1-cb497123e150` | 2026-11-07 | Succeeded; map fix. Replaced after testing showed cut-off labels            |
+| AAB (2nd)           | `production` | `.aab` | `113e2d25-897b-479d-9714-f21331b632e1` | 2026-11-07 | Succeeded; replaced together with the 2nd APK                               |
+| **APK (submitted)** | `preview`    | `.apk` | `a7cd2580-f659-4d1d-b487-df34b8ce9f5e` | 2026-11-07 | Succeeded                                                                   |
+| **AAB (submitted)** | `production` | `.aab` | `b06f6449-5e4f-4e05-b397-3cdf3dd2aec1` | 2026-11-07 | Succeeded                                                                   |
 
 `[INSERT SCREENSHOT of the EAS dashboard showing both builds succeeded]`
 
@@ -304,6 +306,7 @@ Sources for limits: Firebase Firestore quotas (firebase.google.com/docs/firestor
 - `app.json`: package `com.wantokskills.app`, `versionCode` 1, location and photo permission texts, camera and microphone permissions blocked.
 - EAS project created and linked with `eas init` (owner `mosespole.1`); EAS generated and stores the Android signing keystore, used by both submitted builds.
 - Fix after the first APK: the Map tab crashed without a Maps key, so `app.config.js` now sets `extra.googleMapsEnabled` and the app shows a provider list when the native map is unavailable. The APK and AAB were then rebuilt.
+- Fix after the second APK: on a phone with a custom system font, some labels lost their last word ("Computer Repair" showed as "Computer"). Text now uses Android's simple line breaking, and the APK and AAB were rebuilt a third time.
 
 `[Tested the APK on a physical device: model, Android version, what worked]`
 
