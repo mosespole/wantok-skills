@@ -19,6 +19,10 @@ Wantok Skills is an Android marketplace app that connects people in Papua New Gu
 
 Open the link on an Android phone and install the file. Android asks you to allow installing apps from your browser, because the APK is not from the Play Store. This build has no Google Maps key, so the Map tab lists nearby providers instead of showing a map (see [Known limitations](#known-limitations)).
 
+**iPhone and computers:** open **<https://wantok-skills.expo.app>** in Safari or any browser. This is the same app built for the web (React Native Web), hosted free on EAS Hosting and using the same Firebase data. On the web the Map tab shows a message instead of a map, and Call/WhatsApp open the phone's apps. A native iPhone app needs a paid Apple Developer account; the code already supports iOS (`app.json` has an iOS bundle identifier, and the map uses Apple Maps on iPhone).
+
+**Languages:** English and Tok Pisin. Switch on the Welcome screen or in Profile.
+
 ### Demo accounts
 
 The live project contains demo data (8 providers, 14 listings across all 9 categories, 4 customers, 15 reviews), created with `scripts/seed-demo-data.mjs`. Every demo account uses the password **`WantokDemo2026`**.
