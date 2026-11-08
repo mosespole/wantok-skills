@@ -19,7 +19,7 @@ export function useImageUpload(folder: ImageFolder) {
   /** Returns the download URL, or throws after recording a readable error message. */
   const upload = useCallback(
     async (image: PickedImage): Promise<string> => {
-      if (!user) throw new Error('You must be logged in to upload photos.');
+      if (!user) throw new Error('errors.loginToUpload');
       setStatus('uploading');
       setProgress(0);
       setError(null);

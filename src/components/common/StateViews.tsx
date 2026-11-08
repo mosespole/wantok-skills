@@ -7,9 +7,10 @@ import { colors, spacing } from '@/theme';
 import { AppButton } from './AppButton';
 import { AppText } from './AppText';
 
+import { t } from '@/i18n';
 type IconName = ComponentProps<typeof Ionicons>['name'];
 
-export function LoadingState({ message = 'Loading...' }: { message?: string }) {
+export function LoadingState({ message = t('common.loading') }: { message?: string }) {
   return (
     <View style={styles.container} accessibilityLiveRegion="polite">
       <ActivityIndicator size="large" color={colors.primary} />
@@ -68,14 +69,14 @@ export function ErrorState({ message, onRetry, retrying }: ErrorStateProps) {
         <Ionicons name="cloud-offline-outline" size={36} color={colors.error} />
       </View>
       <AppText variant="subtitle" align="center">
-        Something went wrong
+        {t('common.somethingWrong')}
       </AppText>
       <AppText color="textSecondary" align="center">
         {message}
       </AppText>
       {onRetry && (
         <AppButton
-          title="Try again"
+          title={t('common.tryAgain')}
           icon="refresh"
           onPress={onRetry}
           loading={retrying}

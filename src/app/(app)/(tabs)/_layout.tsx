@@ -6,6 +6,7 @@ import { StyleSheet, View } from 'react-native';
 import { useAuth } from '@/hooks/useAuth';
 import { colors, fonts, radius, shadows } from '@/theme';
 
+import { t } from '@/i18n';
 type IconName = ComponentProps<typeof Ionicons>['name'];
 type IconColor = ComponentProps<typeof Ionicons>['color'];
 
@@ -57,7 +58,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: isProvider ? 'Dashboard' : 'Home',
+          title: isProvider ? t('tabs.dashboard') : t('tabs.home'),
           tabBarIcon: isProvider
             ? tabIcon('grid-outline', 'grid')
             : tabIcon('home-outline', 'home'),
@@ -68,14 +69,14 @@ export default function TabsLayout() {
       <Tabs.Protected guard={!isProvider}>
         <Tabs.Screen
           name="explore"
-          options={{ title: 'Explore', tabBarIcon: tabIcon('search-outline', 'search') }}
+          options={{ title: t('tabs.explore'), tabBarIcon: tabIcon('search-outline', 'search') }}
         />
       </Tabs.Protected>
       <Tabs.Protected guard={isProvider}>
         <Tabs.Screen
           name="my-services"
           options={{
-            title: 'My services',
+            title: t('tabs.myServices'),
             tabBarIcon: tabIcon('briefcase-outline', 'briefcase'),
           }}
         />
@@ -83,15 +84,15 @@ export default function TabsLayout() {
 
       <Tabs.Screen
         name="map"
-        options={{ title: 'Map', tabBarIcon: tabIcon('map-outline', 'map') }}
+        options={{ title: t('tabs.map'), tabBarIcon: tabIcon('map-outline', 'map') }}
       />
       <Tabs.Screen
         name="favourites"
-        options={{ title: 'Favourites', tabBarIcon: tabIcon('heart-outline', 'heart') }}
+        options={{ title: t('tabs.favourites'), tabBarIcon: tabIcon('heart-outline', 'heart') }}
       />
       <Tabs.Screen
         name="profile"
-        options={{ title: 'Profile', tabBarIcon: tabIcon('person-outline', 'person') }}
+        options={{ title: t('tabs.profile'), tabBarIcon: tabIcon('person-outline', 'person') }}
       />
     </Tabs>
   );

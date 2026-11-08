@@ -1,4 +1,4 @@
-import { formatDistanceToNow } from 'date-fns';
+import { t, tCount, type TranslationKey } from '@/i18n';
 
 const PNG_COUNTRY_CODE = '675';
 
@@ -28,11 +28,27 @@ export function formatPhone(phone: string): string {
 }
 
 export function formatPrice(price: number | null): string {
-  if (price === null) return 'Price on request';
-  return `From K${price.toLocaleString('en-US', { maximumFractionDigits: 2 })}`;
+  if (price === null) return t('price.onRequest');
+  return t('price.from', { price: price.toLocaleString('en-US', { maximumFractionDigits: 2 }) });
 }
 
+/** "3 days ago" / "3 de i go pinis", in the app's current language. */
 export function formatRelativeDate(date: Date | null): string {
   if (!date) return '';
-  return formatDistanceToNow(date, { addSuffix: true });
+  const minutes = Math.max(0, Math.round((Date.now() - date.getTime()) / 60_000));
+  if (minutes < 1) return t('time.justNow');
+  if (minutes < 60) return tCount('time.minutes', minutes);
+  const hours = Math.round(minutes / 60);
+  if (hours < 24) return tCount('time.hours', hours);
+  const days = Math.round(hours / 24);
+  if (days < 30) return tCount('time.days', days);
+  const months = Math.round(days / 30);
+  if (months < 12) return tCount('time.months', months);
+  return tCount('time.years', Math.round(days / 365));
+}
+
+/** "5 November 2026" / "5 Novemba 2026", in the app's current language. */
+export function formatDate(date: Date): string {
+  const month = t(`month.${date.getMonth() + 1}` as TranslationKey);
+  return `${date.getDate()} ${month} ${date.getFullYear()}`;
 }

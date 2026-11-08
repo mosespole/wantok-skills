@@ -5,6 +5,7 @@ import { colors } from '@/theme';
 
 import { AppText } from './AppText';
 
+import { t } from '@/i18n';
 interface AvatarProps {
   name: string;
   imageUrl?: string | null;
@@ -33,13 +34,13 @@ export function Avatar({ name, imageUrl, size = 56 }: AvatarProps) {
         style={[styles.image, dimensions]}
         contentFit="cover"
         transition={150}
-        accessibilityLabel={`${name} profile photo`}
+        accessibilityLabel={t('a11y.profilePhoto', { name })}
       />
     );
   }
 
   return (
-    <View style={[styles.fallback, dimensions]} accessibilityLabel={`${name} initials`}>
+    <View style={[styles.fallback, dimensions]} accessibilityLabel={t('a11y.initials', { name })}>
       <AppText style={{ fontSize: size * 0.38, lineHeight: size * 0.5 }} color="primary">
         {getInitials(name)}
       </AppText>

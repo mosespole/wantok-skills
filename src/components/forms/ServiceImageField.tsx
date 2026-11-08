@@ -9,6 +9,7 @@ import { STORAGE_ENABLED } from '@/constants/features';
 import { pickImage, type PickedImage } from '@/services/media/imagePickerService';
 import { colors, radius, spacing } from '@/theme';
 
+import { t } from '@/i18n';
 /** What the provider did with the listing photo; applied when the form is saved. */
 export type ImageChange =
   { type: 'keep' } | { type: 'remove' } | { type: 'replace'; image: PickedImage };
@@ -42,16 +43,16 @@ export function ServiceImageField({
       const image = await pickImage({ aspect: [16, 10] });
       if (image) onChange({ type: 'replace', image });
     } catch {
-      setPickError('Your photo library could not be opened. Please try again.');
+      setPickError(t('photo.libraryError'));
     }
   };
 
   return (
     <View style={styles.wrapper}>
       <AppText variant="label" color="textSecondary">
-        Service photo{' '}
+        {t('serviceImage.label')}{' '}
         <AppText variant="caption" color="textMuted">
-          (optional)
+          {t('common.optional')}
         </AppText>
       </AppText>
 
@@ -61,7 +62,7 @@ export function ServiceImageField({
             source={{ uri: previewUri }}
             style={styles.preview}
             contentFit="cover"
-            accessibilityLabel="Service photo preview"
+            accessibilityLabel={t('serviceImage.preview')}
           />
           {!uploading && (
             <Pressable
@@ -75,7 +76,7 @@ export function ServiceImageField({
               }
               hitSlop={8}
               accessibilityRole="button"
-              accessibilityLabel="Remove photo"
+              accessibilityLabel={t('serviceImage.remove')}
             >
               <Ionicons name="close" size={18} color={colors.textOnPrimary} />
             </Pressable>
@@ -86,11 +87,11 @@ export function ServiceImageField({
           style={styles.empty}
           onPress={choose}
           accessibilityRole="button"
-          accessibilityLabel="Add a service photo"
+          accessibilityLabel={t('serviceImage.add')}
         >
           <Ionicons name="image-outline" size={32} color={colors.primary} />
           <AppText variant="label" color="primary">
-            Add a photo of your work
+            {t('serviceImage.addHint')}
           </AppText>
         </Pressable>
       )}
@@ -98,7 +99,7 @@ export function ServiceImageField({
       {previewUri && !uploading && (
         <Pressable onPress={choose} accessibilityRole="button">
           <AppText variant="label" color="primary">
-            Choose a different photo
+            {t('common.chooseDifferentPhoto')}
           </AppText>
         </Pressable>
       )}
@@ -107,7 +108,7 @@ export function ServiceImageField({
         <View style={styles.progress}>
           <ProgressBar value={uploadProgress} />
           <AppText variant="caption" color="textSecondary">
-            Uploading photo... {Math.round(uploadProgress * 100)}%
+            {t('serviceImage.uploading', { percent: Math.round(uploadProgress * 100) })}
           </AppText>
         </View>
       )}

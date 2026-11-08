@@ -1,10 +1,11 @@
 import { Pressable, ScrollView, StyleSheet } from 'react-native';
 
-import { CATEGORIES } from '@/constants/categories';
+import { CATEGORIES, getCategoryLabel } from '@/constants/categories';
 import { colors, radius, spacing } from '@/theme';
 
 import { AppText } from './AppText';
 
+import { t } from '@/i18n';
 interface CategoryChipsProps {
   /** Selected category ID, or undefined for "All". */
   value: string | undefined;
@@ -13,7 +14,7 @@ interface CategoryChipsProps {
 
 /** Horizontally scrolling single-select filter with an "All" option. */
 export function CategoryChips({ value, onChange }: CategoryChipsProps) {
-  const options = [{ id: undefined, label: 'All' }, ...CATEGORIES];
+  const options = [{ id: undefined, label: t('common.all') }, ...CATEGORIES];
 
   return (
     <ScrollView
@@ -33,7 +34,7 @@ export function CategoryChips({ value, onChange }: CategoryChipsProps) {
             accessibilityState={{ selected }}
           >
             <AppText variant="label" color={selected ? 'textOnPrimary' : 'textPrimary'}>
-              {option.label}
+              {option.id ? getCategoryLabel(option.id) : option.label}
             </AppText>
           </Pressable>
         );

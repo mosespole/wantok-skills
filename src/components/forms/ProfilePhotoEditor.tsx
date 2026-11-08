@@ -8,6 +8,7 @@ import { useProfilePhoto } from '@/hooks/useProfilePhoto';
 import { pickImage, type PickedImage } from '@/services/media/imagePickerService';
 import { colors, spacing } from '@/theme';
 
+import { t } from '@/i18n';
 const SIZE = 112;
 
 interface ProfilePhotoEditorProps {
@@ -30,7 +31,7 @@ export function ProfilePhotoEditor({ name, currentUrl }: ProfilePhotoEditorProps
       const image = await pickImage({ aspect: [1, 1] });
       if (image) setPicked(image);
     } catch {
-      setPickError('Your photo library could not be opened. Please try again.');
+      setPickError(t('photo.libraryError'));
     }
   };
 
@@ -51,7 +52,7 @@ export function ProfilePhotoEditor({ name, currentUrl }: ProfilePhotoEditorProps
           source={{ uri: picked.uri }}
           style={styles.preview}
           contentFit="cover"
-          accessibilityLabel="Selected photo preview"
+          accessibilityLabel={t('photo.preview')}
         />
       ) : (
         <Avatar name={name} imageUrl={currentUrl} size={SIZE} />
@@ -61,7 +62,7 @@ export function ProfilePhotoEditor({ name, currentUrl }: ProfilePhotoEditorProps
         <View style={styles.message}>
           <Ionicons name="checkmark-circle" size={18} color={colors.success} />
           <AppText variant="caption" color="success">
-            Profile picture updated
+            {t('photo.updated')}
           </AppText>
         </View>
       )}
@@ -75,7 +76,7 @@ export function ProfilePhotoEditor({ name, currentUrl }: ProfilePhotoEditorProps
       {picked ? (
         <View style={styles.actions}>
           <AppButton
-            title="Cancel"
+            title={t('common.cancel')}
             variant="ghost"
             onPress={() => {
               setPicked(null);
@@ -85,7 +86,7 @@ export function ProfilePhotoEditor({ name, currentUrl }: ProfilePhotoEditorProps
             fullWidth={false}
           />
           <AppButton
-            title={photo.status === 'error' ? 'Try again' : 'Save picture'}
+            title={photo.status === 'error' ? t('common.tryAgain') : t('photo.save')}
             icon="checkmark"
             onPress={savePhoto}
             loading={saving}
@@ -95,7 +96,7 @@ export function ProfilePhotoEditor({ name, currentUrl }: ProfilePhotoEditorProps
       ) : (
         <View style={styles.actions}>
           <AppButton
-            title={currentUrl ? 'Change picture' : 'Add a profile picture'}
+            title={currentUrl ? t('photo.change') : t('photo.add')}
             icon="image-outline"
             variant="secondary"
             onPress={choosePhoto}
@@ -104,7 +105,7 @@ export function ProfilePhotoEditor({ name, currentUrl }: ProfilePhotoEditorProps
           />
           {currentUrl && (
             <AppButton
-              title="Remove"
+              title={t('photo.remove')}
               variant="ghost"
               onPress={photo.removePhoto}
               loading={saving}

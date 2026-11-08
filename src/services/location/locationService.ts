@@ -51,7 +51,7 @@ export async function getCurrentCoordinates(): Promise<LocationResult> {
   } catch {
     return {
       kind: 'error',
-      message: 'We could not get your location. Move to an open area and try again.',
+      message: 'location.errorGeneric',
     };
   }
 }

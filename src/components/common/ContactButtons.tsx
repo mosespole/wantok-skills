@@ -8,6 +8,7 @@ import { getErrorMessage } from '@/utils/errors';
 import { AppButton } from './AppButton';
 import { AppText } from './AppText';
 
+import { t } from '@/i18n';
 interface ContactButtonsProps {
   phone: string;
   /** Pre-filled WhatsApp message, e.g. mentioning the listing title. */
@@ -31,14 +32,14 @@ export function ContactButtons({ phone, whatsAppMessage }: ContactButtonsProps) 
     <View style={styles.wrapper}>
       <View style={styles.row}>
         <AppButton
-          title="Call"
+          title={t('contact.call')}
           icon="call"
           onPress={() => run(() => callPhone(phone))}
           style={styles.button}
           fullWidth={false}
         />
         <AppButton
-          title="WhatsApp"
+          title={t('contact.whatsapp')}
           icon="logo-whatsapp"
           variant="whatsapp"
           onPress={() => run(() => openWhatsApp(phone, whatsAppMessage))}

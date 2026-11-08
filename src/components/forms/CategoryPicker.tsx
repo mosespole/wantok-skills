@@ -2,7 +2,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/common';
-import { CATEGORIES, type CategoryId } from '@/constants/categories';
+import { CATEGORIES, getCategoryLabel, type CategoryId } from '@/constants/categories';
+import { tMessage } from '@/i18n';
 import { colors, radius, spacing } from '@/theme';
 
 interface CategoryPickerProps {
@@ -29,7 +30,7 @@ export function CategoryPicker({ label, value, onChange, error }: CategoryPicker
               style={[styles.chip, selected && styles.chipSelected]}
               accessibilityRole="radio"
               accessibilityState={{ checked: selected }}
-              accessibilityLabel={category.label}
+              accessibilityLabel={getCategoryLabel(category.id)}
             >
               <Ionicons
                 name={category.icon}
@@ -37,7 +38,7 @@ export function CategoryPicker({ label, value, onChange, error }: CategoryPicker
                 color={selected ? colors.textOnPrimary : colors.primary}
               />
               <AppText variant="label" color={selected ? 'textOnPrimary' : 'textPrimary'}>
-                {category.label}
+                {getCategoryLabel(category.id)}
               </AppText>
             </Pressable>
           );
@@ -45,7 +46,7 @@ export function CategoryPicker({ label, value, onChange, error }: CategoryPicker
       </View>
       {error ? (
         <AppText variant="caption" color="error">
-          {error}
+          {tMessage(error)}
         </AppText>
       ) : null}
     </View>

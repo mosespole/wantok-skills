@@ -15,6 +15,7 @@ import { usePortfolio } from '@/hooks/usePortfolio';
 import { MAX_PORTFOLIO_ITEMS } from '@/services/firebase/portfolioService';
 import { getErrorMessage } from '@/utils/errors';
 
+import { t } from '@/i18n';
 /** Provider's own past-work gallery: add new projects, tap one to view or edit it. */
 export default function MyWorkScreen() {
   const { user } = useAuth();
@@ -22,7 +23,7 @@ export default function MyWorkScreen() {
   const items = portfolioQuery.data ?? [];
   const isFull = items.length >= MAX_PORTFOLIO_ITEMS;
 
-  if (portfolioQuery.isLoading) return <LoadingState message="Loading your past work..." />;
+  if (portfolioQuery.isLoading) return <LoadingState message={t('myWork.loading')} />;
   if (portfolioQuery.isError) {
     return (
       <ErrorState
@@ -41,13 +42,13 @@ export default function MyWorkScreen() {
     >
       <View style={styles.header}>
         <AppText color="textSecondary" style={styles.flex}>
-          {items.length} of {MAX_PORTFOLIO_ITEMS} projects. Customers see these on your profile.
-          {isFull ? ' Delete a project to add another.' : ''}
+          {t('myWork.count', { count: items.length, max: MAX_PORTFOLIO_ITEMS })}
+          {isFull ? ` ${t('myWork.fullHint')}` : ''}
         </AppText>
       </View>
       <AppButton
         // Kept short: button labels stay on one line, so a long label would be cut off.
-        title={isFull ? 'Gallery full' : 'Add a project'}
+        title={isFull ? t('myWork.full') : t('screens.addProject')}
         icon="add"
         onPress={() => router.push('/add-work')}
         disabled={isFull}
@@ -55,8 +56,8 @@ export default function MyWorkScreen() {
       {items.length === 0 ? (
         <EmptyState
           icon="images-outline"
-          title="No past work yet"
-          message="Add photos of jobs you have completed so customers can see the quality of your work."
+          title={t('myWork.emptyTitle')}
+          message={t('myWork.emptyMessage')}
         />
       ) : (
         <PortfolioGallery items={items} />

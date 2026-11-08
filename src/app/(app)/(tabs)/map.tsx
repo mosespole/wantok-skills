@@ -17,6 +17,7 @@ import { colors, radius, shadows, spacing } from '@/theme';
 import { getErrorMessage } from '@/utils/errors';
 import { buildProviderPins, type ProviderPin } from '@/utils/mapPins';
 
+import { t, tCount } from '@/i18n';
 // Keeps the round buttons above the selected-provider card.
 const SELECTED_CARD_SPACE = 190;
 
@@ -57,9 +58,11 @@ export default function MapScreen() {
   const distanceText =
     selectedDistance === null
       ? null
-      : `${selectedDistance < 1 ? '<1' : Math.round(selectedDistance)} km away`;
+      : t('common.kmAway', {
+          distance: selectedDistance < 1 ? '<1' : Math.round(selectedDistance),
+        });
 
-  if (servicesQuery.isLoading) return <LoadingState message="Loading providers..." />;
+  if (servicesQuery.isLoading) return <LoadingState message={t('map.loading')} />;
   if (servicesQuery.isError && !servicesQuery.data) {
     return (
       <ErrorState
@@ -99,30 +102,27 @@ export default function MapScreen() {
           onRetry={() => servicesQuery.refetch()}
         />
         <Card style={styles.statusCard}>
-          <AppText variant="bodyStrong">
-            {pins.length} {pins.length === 1 ? 'provider' : 'providers'} on the map
-          </AppText>
+          <AppText variant="bodyStrong">{tCount('map.providersOnMap', pins.length)}</AppText>
           {location.status === 'locating' && (
             <AppText variant="caption" color="textSecondary">
-              Finding your location...
+              {t('map.locating')}
             </AppText>
           )}
           {locationProblem && (
             <View style={styles.locationWarning}>
               <AppText variant="caption" color="warning">
-                {location.message ?? 'Your location is unavailable.'} You can still browse all
-                providers.
+                {location.message ?? t('map.locationUnavailable')} {t('map.browseAll')}
               </AppText>
               {location.status === 'permission-denied' && !location.canAskAgain ? (
                 <Pressable onPress={location.openSettings} accessibilityRole="link">
                   <AppText variant="label" color="primary">
-                    Open Settings
+                    {t('common.openSettings')}
                   </AppText>
                 </Pressable>
               ) : (
                 <Pressable onPress={centreOnMe} accessibilityRole="button">
                   <AppText variant="label" color="primary">
-                    Try again
+                    {t('common.tryAgain')}
                   </AppText>
                 </Pressable>
               )}
@@ -130,7 +130,7 @@ export default function MapScreen() {
           )}
           {pins.length === 0 && (
             <AppText variant="caption" color="textSecondary">
-              No providers have added a map location yet.
+              {t('map.noPins')}
             </AppText>
           )}
         </Card>
@@ -144,7 +144,7 @@ export default function MapScreen() {
           style={styles.fab}
           onPress={showAllProviders}
           accessibilityRole="button"
-          accessibilityLabel="Show all providers"
+          accessibilityLabel={t('map.showAll')}
         >
           <Ionicons name="people-outline" size={22} color={colors.primary} />
         </Pressable>
@@ -152,7 +152,7 @@ export default function MapScreen() {
           style={styles.fab}
           onPress={centreOnMe}
           accessibilityRole="button"
-          accessibilityLabel="Centre map on my location"
+          accessibilityLabel={t('map.centreOnMe')}
         >
           <Ionicons name="locate" size={22} color={colors.primary} />
         </Pressable>
@@ -177,7 +177,7 @@ export default function MapScreen() {
                 {[
                   selected.provider.locationName,
                   distanceText,
-                  `${selected.listingCount} ${selected.listingCount === 1 ? 'listing' : 'listings'}`,
+                  tCount('common.listings', selected.listingCount),
                 ]
                   .filter(Boolean)
                   .join(' · ')}
@@ -187,13 +187,13 @@ export default function MapScreen() {
               onPress={() => setSelected(null)}
               hitSlop={10}
               accessibilityRole="button"
-              accessibilityLabel="Close"
+              accessibilityLabel={t('common.close')}
             >
               <Ionicons name="close" size={22} color={colors.textMuted} />
             </Pressable>
           </View>
           <AppButton
-            title="View profile"
+            title={t('common.viewProfile')}
             onPress={() =>
               router.push({ pathname: '/provider/[id]', params: { id: selected.providerId } })
             }

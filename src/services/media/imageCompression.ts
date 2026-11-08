@@ -26,7 +26,7 @@ async function encode(uri: string, width: number, quality: number): Promise<stri
     compress: quality,
     format: SaveFormat.JPEG,
   });
-  if (!result.base64) throw new Error('The photo could not be processed.');
+  if (!result.base64) throw new Error('errors.photoProcess');
   return DATA_URI_PREFIX + result.base64;
 }
 
@@ -46,5 +46,5 @@ export async function compressPhoto(localUri: string, preset: PhotoPreset): Prom
     const dataUri = await encode(localUri, attempt.width, attempt.quality);
     if (dataUri.length <= maxChars) return dataUri;
   }
-  throw new Error('This photo is too detailed to save. Please choose a different photo.');
+  throw new Error('errors.photoTooDetailed');
 }

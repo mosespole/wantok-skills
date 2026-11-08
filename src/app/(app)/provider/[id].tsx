@@ -25,6 +25,7 @@ import { colors, radius, spacing } from '@/theme';
 import { getErrorMessage } from '@/utils/errors';
 import { formatPhone, formatPrice } from '@/utils/formatting';
 
+import { t } from '@/i18n';
 /** Provider Details: public profile, contact options, favourite toggle and their active listings. */
 export default function ProviderDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -35,7 +36,7 @@ export default function ProviderDetailsScreen() {
 
   const provider = providerQuery.data;
 
-  if (providerQuery.isLoading) return <LoadingState message="Loading provider..." />;
+  if (providerQuery.isLoading) return <LoadingState message={t('provider.loading')} />;
   if (providerQuery.isError) {
     return (
       <ErrorState
@@ -49,9 +50,9 @@ export default function ProviderDetailsScreen() {
     return (
       <EmptyState
         icon="person-outline"
-        title="Provider not found"
-        message="This provider's profile is no longer available."
-        actionLabel="Go back"
+        title={t('provider.notFoundTitle')}
+        message={t('provider.notFoundMessage')}
+        actionLabel={t('common.goBack')}
         onAction={() => router.back()}
       />
     );
@@ -98,7 +99,9 @@ export default function ProviderDetailsScreen() {
       <Card style={styles.infoCard}>
         <View style={styles.infoRow}>
           <Ionicons name="location-outline" size={18} color={colors.primary} />
-          <AppText style={styles.infoText}>{provider.locationName || 'Location not set'}</AppText>
+          <AppText style={styles.infoText}>
+            {provider.locationName || t('provider.locationNotSet')}
+          </AppText>
         </View>
         <View style={styles.infoRow}>
           <Ionicons name="call-outline" size={18} color={colors.primary} />
@@ -108,20 +111,20 @@ export default function ProviderDetailsScreen() {
 
       {provider.bio !== '' && (
         <View style={styles.section}>
-          <AppText variant="subtitle">About</AppText>
+          <AppText variant="subtitle">{t('provider.about')}</AppText>
           <AppText color="textSecondary">{provider.bio}</AppText>
         </View>
       )}
 
       <ContactButtons
         phone={provider.phoneNumber}
-        whatsAppMessage="Hello, I found your profile on Wantok Skills."
+        whatsAppMessage={t('provider.whatsAppMessage')}
       />
 
       <View style={styles.section}>
-        <SectionHeader title="Past work" />
+        <SectionHeader title={t('screens.pastWork')} />
         {portfolioQuery.isLoading ? (
-          <LoadingState message="Loading past work..." />
+          <LoadingState message={t('provider.loadingWork')} />
         ) : portfolioQuery.isError ? (
           <ErrorState
             message={getErrorMessage(portfolioQuery.error)}
@@ -129,16 +132,16 @@ export default function ProviderDetailsScreen() {
             retrying={portfolioQuery.isFetching}
           />
         ) : (portfolioQuery.data ?? []).length === 0 ? (
-          <AppText color="textSecondary">No past work photos yet.</AppText>
+          <AppText color="textSecondary">{t('provider.noWork')}</AppText>
         ) : (
           <PortfolioGallery items={portfolioQuery.data ?? []} />
         )}
       </View>
 
       <View style={styles.section}>
-        <SectionHeader title="Services offered" />
+        <SectionHeader title={t('provider.servicesOffered')} />
         {servicesQuery.isLoading ? (
-          <LoadingState message="Loading services..." />
+          <LoadingState message={t('services.loading')} />
         ) : servicesQuery.isError ? (
           <ErrorState
             message={getErrorMessage(servicesQuery.error)}
@@ -146,7 +149,7 @@ export default function ProviderDetailsScreen() {
             retrying={servicesQuery.isFetching}
           />
         ) : listings.length === 0 ? (
-          <AppText color="textSecondary">No active listings at the moment.</AppText>
+          <AppText color="textSecondary">{t('provider.noListings')}</AppText>
         ) : (
           listings.map((listing) => (
             <Card
@@ -154,7 +157,7 @@ export default function ProviderDetailsScreen() {
               onPress={() =>
                 router.push({ pathname: '/service/[id]', params: { id: listing.serviceId } })
               }
-              accessibilityLabel={`View ${listing.title}`}
+              accessibilityLabel={t('common.viewItem', { name: listing.title })}
               style={styles.listingCard}
             >
               <View style={styles.listingText}>

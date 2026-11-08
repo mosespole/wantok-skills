@@ -1,6 +1,8 @@
 import type { Ionicons } from '@expo/vector-icons';
 import type { ComponentProps } from 'react';
 
+import { isTranslationKey, t } from '@/i18n';
+
 type IconName = ComponentProps<typeof Ionicons>['name'];
 
 /**
@@ -63,7 +65,14 @@ export const CATEGORY_IDS = CATEGORIES.map((category) => category.id) as [
   ...CategoryId[],
 ];
 
+/** Category name in the app's current language (`label` above is the English name). */
 export function getCategoryLabel(id: string): string {
+  const key = `category.${id}`;
+  return isTranslationKey(key) ? t(key) : t('category.other');
+}
+
+/** English name, used so search matches English words whichever language is shown. */
+export function getCategoryEnglishLabel(id: string): string {
   return CATEGORIES.find((category) => category.id === id)?.label ?? 'Other';
 }
 

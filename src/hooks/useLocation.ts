@@ -6,6 +6,7 @@ import {
   getPlaceName,
   type Coordinates,
 } from '@/services/location/locationService';
+import { tMessage } from '@/i18n';
 
 export type LocationStatus =
   'idle' | 'locating' | 'success' | 'permission-denied' | 'services-disabled' | 'error';
@@ -19,10 +20,10 @@ interface LocationState {
   canAskAgain: boolean;
 }
 
+// Stored as translation keys; translated when the hook returns them.
 const MESSAGES: Record<'permission-denied' | 'services-disabled', string> = {
-  'permission-denied':
-    'Location permission was denied. You can still type your location, or allow access in Settings.',
-  'services-disabled': 'Location services are turned off. Turn on GPS/Location and try again.',
+  'permission-denied': 'location.permissionDenied',
+  'services-disabled': 'location.servicesDisabled',
 };
 
 /** Requests the device's location on demand and tracks loading, success and failure states. */
@@ -75,5 +76,10 @@ export function useCurrentLocation() {
 
   const openSettings = useCallback(() => Linking.openSettings(), []);
 
-  return { ...state, requestLocation, openSettings };
+  return {
+    ...state,
+    message: state.message ? tMessage(state.message) : null,
+    requestLocation,
+    openSettings,
+  };
 }

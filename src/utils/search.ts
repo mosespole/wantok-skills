@@ -1,4 +1,4 @@
-import { getCategoryLabel } from '@/constants/categories';
+import { getCategoryEnglishLabel, getCategoryLabel } from '@/constants/categories';
 import type { ProviderSummary, ServiceWithProvider } from '@/types/service';
 
 export interface ServiceFilters {
@@ -32,6 +32,7 @@ export function filterServices(
       service.title,
       service.description,
       getCategoryLabel(service.category),
+      getCategoryEnglishLabel(service.category),
       service.locationName,
       service.provider?.fullName ?? '',
     ]
@@ -58,6 +59,7 @@ export function filterProviders(
     const haystack = [
       provider.fullName,
       provider.skillCategory ? getCategoryLabel(provider.skillCategory) : '',
+      provider.skillCategory ? getCategoryEnglishLabel(provider.skillCategory) : '',
       provider.bio,
       provider.locationName,
     ]

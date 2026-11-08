@@ -9,6 +9,7 @@ import { useService, useUpdateService } from '@/hooks/useServices';
 import { getErrorMessage } from '@/utils/errors';
 import { toServiceInput } from '@/utils/validation';
 
+import { t } from '@/i18n';
 export default function EditServiceScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { user } = useAuth();
@@ -20,7 +21,7 @@ export default function EditServiceScreen() {
 
   let content;
   if (serviceQuery.isLoading) {
-    content = <LoadingState message="Loading listing..." />;
+    content = <LoadingState message={t('listing.loading')} />;
   } else if (serviceQuery.isError) {
     content = (
       <ErrorState
@@ -34,16 +35,16 @@ export default function EditServiceScreen() {
     content = (
       <EmptyState
         icon="lock-closed-outline"
-        title="Listing unavailable"
-        message="This listing does not exist or does not belong to you."
-        actionLabel="Go back"
+        title={t('editService.unavailableTitle')}
+        message={t('editService.unavailableMessage')}
+        actionLabel={t('common.goBack')}
         onAction={() => router.back()}
       />
     );
   } else {
     content = (
       <ServiceForm
-        submitLabel="Save changes"
+        submitLabel={t('common.saveChanges')}
         showActiveToggle
         currentImageUrl={listing.imageUrl}
         uploadProgress={serviceImage.uploadProgress}
@@ -77,7 +78,7 @@ export default function EditServiceScreen() {
 
   return (
     <Screen edges={['bottom']} scroll={Boolean(listing)}>
-      <Stack.Screen options={{ title: 'Edit listing' }} />
+      <Stack.Screen options={{ title: t('screens.editListing') }} />
       {content}
     </Screen>
   );

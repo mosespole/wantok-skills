@@ -7,6 +7,7 @@ import { colors, radius, spacing } from '@/theme';
 import type { ServiceListing } from '@/types/service';
 import { formatPrice, formatRelativeDate } from '@/utils/formatting';
 
+import { t } from '@/i18n';
 interface MyServiceItemProps {
   listing: ServiceListing;
   onView: () => void;
@@ -17,14 +18,18 @@ interface MyServiceItemProps {
 /** A provider's own listing, with edit and delete actions. */
 export function MyServiceItem({ listing, onView, onEdit, onDelete }: MyServiceItemProps) {
   return (
-    <Card onPress={onView} accessibilityLabel={`View ${listing.title}`} style={styles.card}>
+    <Card
+      onPress={onView}
+      accessibilityLabel={t('common.viewItem', { name: listing.title })}
+      style={styles.card}
+    >
       <View style={styles.topRow}>
         <AppText variant="bodyStrong" style={styles.title} numberOfLines={2}>
           {listing.title}
         </AppText>
         <View style={[styles.badge, !listing.isActive && styles.badgePaused]}>
           <AppText variant="caption" color={listing.isActive ? 'success' : 'warning'}>
-            {listing.isActive ? 'Active' : 'Paused'}
+            {listing.isActive ? t('listing.active') : t('listing.paused')}
           </AppText>
         </View>
       </View>
@@ -34,7 +39,7 @@ export function MyServiceItem({ listing, onView, onEdit, onDelete }: MyServiceIt
       </AppText>
       {listing.updatedAt && (
         <AppText variant="caption" color="textMuted">
-          Updated {formatRelativeDate(listing.updatedAt)}
+          {t('listing.updated', { when: formatRelativeDate(listing.updatedAt) })}
         </AppText>
       )}
 
@@ -44,11 +49,11 @@ export function MyServiceItem({ listing, onView, onEdit, onDelete }: MyServiceIt
           style={styles.action}
           hitSlop={6}
           accessibilityRole="button"
-          accessibilityLabel={`Edit ${listing.title}`}
+          accessibilityLabel={t('common.editItem', { name: listing.title })}
         >
           <Ionicons name="create-outline" size={18} color={colors.primary} />
           <AppText variant="label" color="primary">
-            Edit
+            {t('common.edit')}
           </AppText>
         </Pressable>
         <Pressable
@@ -56,11 +61,11 @@ export function MyServiceItem({ listing, onView, onEdit, onDelete }: MyServiceIt
           style={styles.action}
           hitSlop={6}
           accessibilityRole="button"
-          accessibilityLabel={`Delete ${listing.title}`}
+          accessibilityLabel={t('common.deleteItem', { name: listing.title })}
         >
           <Ionicons name="trash-outline" size={18} color={colors.error} />
           <AppText variant="label" color="error">
-            Delete
+            {t('common.delete')}
           </AppText>
         </Pressable>
       </View>

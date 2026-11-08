@@ -3,20 +3,31 @@ import { router } from 'expo-router';
 import type { ComponentProps } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { AppButton, AppText, BrandMark, HeaderBanner, Screen } from '@/components/common';
-import { APP_NAME, APP_SLOGAN_TOK_PISIN, APP_TAGLINE } from '@/constants/app';
+import {
+  AppButton,
+  AppText,
+  BrandMark,
+  HeaderBanner,
+  LanguageSwitch,
+  Screen,
+} from '@/components/common';
+import { APP_NAME, APP_SLOGAN_TOK_PISIN } from '@/constants/app';
 import { colors, radius, spacing } from '@/theme';
 
-const HIGHLIGHTS: { icon: ComponentProps<typeof Ionicons>['name']; text: string }[] = [
-  { icon: 'search-outline', text: 'Find trusted local tradespeople and freelancers' },
-  { icon: 'call-outline', text: 'Contact providers directly by phone or WhatsApp' },
-  { icon: 'briefcase-outline', text: 'Advertise your own skills to the community' },
+import { t, type TranslationKey } from '@/i18n';
+const HIGHLIGHTS: { icon: ComponentProps<typeof Ionicons>['name']; text: TranslationKey }[] = [
+  { icon: 'search-outline', text: 'welcome.highlightFind' },
+  { icon: 'call-outline', text: 'welcome.highlightContact' },
+  { icon: 'briefcase-outline', text: 'welcome.highlightAdvertise' },
 ];
 
 export default function WelcomeScreen() {
   return (
     <Screen edges={['bottom']} padded={false} contentStyle={styles.screen}>
       <HeaderBanner style={styles.hero}>
+        <View style={styles.languageRow}>
+          <LanguageSwitch tone="onPrimary" />
+        </View>
         <View style={styles.markRing}>
           <BrandMark size={84} inverted />
         </View>
@@ -27,7 +38,7 @@ export default function WelcomeScreen() {
           {APP_SLOGAN_TOK_PISIN}
         </AppText>
         <AppText variant="caption" color="textOnPrimaryMuted" align="center">
-          {APP_TAGLINE}
+          {t('app.tagline')}
         </AppText>
       </HeaderBanner>
 
@@ -38,14 +49,18 @@ export default function WelcomeScreen() {
               <View style={styles.highlightIcon}>
                 <Ionicons name={item.icon} size={20} color={colors.primary} />
               </View>
-              <AppText style={styles.highlightText}>{item.text}</AppText>
+              <AppText style={styles.highlightText}>{t(item.text)}</AppText>
             </View>
           ))}
         </View>
 
         <View style={styles.actions}>
-          <AppButton title="Create an account" onPress={() => router.push('/register')} />
-          <AppButton title="Log in" variant="outline" onPress={() => router.push('/login')} />
+          <AppButton title={t('auth.createAnAccount')} onPress={() => router.push('/register')} />
+          <AppButton
+            title={t('auth.login')}
+            variant="outline"
+            onPress={() => router.push('/login')}
+          />
         </View>
       </View>
     </Screen>
@@ -55,6 +70,7 @@ export default function WelcomeScreen() {
 const styles = StyleSheet.create({
   screen: { justifyContent: 'space-between' },
   hero: { alignItems: 'center', paddingBottom: spacing.xxl, gap: spacing.sm },
+  languageRow: { alignSelf: 'stretch', alignItems: 'flex-end', marginBottom: spacing.sm },
   markRing: {
     padding: 6,
     marginBottom: spacing.sm,

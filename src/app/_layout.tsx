@@ -14,6 +14,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { AuthProvider } from '@/context/AuthContext';
 import { useAuth } from '@/hooks/useAuth';
+import { LanguageProvider, useLanguage } from '@/i18n/LanguageContext';
 import { colors } from '@/theme';
 
 // Keep the native splash screen up until the saved login session has been checked,
@@ -42,14 +43,28 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <StatusBar style="dark" />
-          {fontsReady ? <RootNavigator /> : null}
-        </AuthProvider>
-      </QueryClientProvider>
+      <LanguageProvider>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <StatusBar style="dark" />
+            {fontsReady ? <LanguageBoundary /> : null}
+          </AuthProvider>
+        </QueryClientProvider>
+      </LanguageProvider>
     </SafeAreaProvider>
   );
+}
+
+/**
+ * Waits for the saved language, then renders the screens. Keyed by language: switching
+ * between English and Tok Pisin rebuilds every screen, so all text (including text from
+ * helpers such as error and price formatting) appears in the new language at once.
+ * The login session and cached data are kept; navigation returns to the first screen.
+ */
+function LanguageBoundary() {
+  const { language, ready } = useLanguage();
+  if (!ready) return null;
+  return <RootNavigator key={language} />;
 }
 
 /**
