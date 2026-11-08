@@ -11,6 +11,7 @@ import { getErrorMessage } from '@/utils/errors';
 
 import { EmptyState, ErrorState, LoadingState } from './StateViews';
 
+import { t } from '@/i18n';
 interface ServiceListProps {
   query: UseQueryResult<ActiveServicesResult>;
   /** The listings to show after filtering `query.data`. */
@@ -28,7 +29,7 @@ export function ServiceList({
   emptyMessage,
   header,
 }: ServiceListProps) {
-  if (query.isLoading) return <LoadingState message="Loading services..." />;
+  if (query.isLoading) return <LoadingState message={t('services.loading')} />;
   if (query.isError && !query.data) {
     return (
       <ErrorState

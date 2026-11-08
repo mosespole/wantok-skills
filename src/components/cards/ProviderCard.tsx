@@ -9,12 +9,13 @@ import { getCategoryLabel } from '@/constants/categories';
 import { colors, spacing } from '@/theme';
 import type { ProviderSummary } from '@/types/service';
 
+import { t } from '@/i18n';
 /** Compact provider row with a favourite toggle. Opens the provider's profile. */
 export function ProviderCard({ provider }: { provider: ProviderSummary }) {
   return (
     <Card
       onPress={() => router.push({ pathname: '/provider/[id]', params: { id: provider.uid } })}
-      accessibilityLabel={`View ${provider.fullName}'s profile`}
+      accessibilityLabel={t('common.viewProfileOf', { name: provider.fullName })}
       style={styles.card}
     >
       <Avatar name={provider.fullName} imageUrl={provider.profileImageUrl} size={52} />

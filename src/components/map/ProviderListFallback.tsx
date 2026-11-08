@@ -9,6 +9,7 @@ import { distanceInKm } from '@/services/location/locationService';
 import { colors, radius, spacing } from '@/theme';
 import type { ProviderPin } from '@/utils/mapPins';
 
+import { t } from '@/i18n';
 interface ProviderListFallbackProps {
   pins: ProviderPin[];
   userCoords: Coordinates | null;
@@ -34,14 +35,12 @@ export function ProviderListFallback({ pins, userCoords }: ProviderListFallbackP
         ItemSeparatorComponent={() => <View style={styles.separator} />}
         ListHeaderComponent={
           <View style={styles.header}>
-            <AppText variant="title">Providers near you</AppText>
+            <AppText variant="title">{t('mapList.title')}</AppText>
             <View style={styles.notice}>
               <Ionicons name="map-outline" size={20} color={colors.primary} />
               <AppText variant="caption" color="textSecondary" style={styles.flex}>
-                The map view is not available in this version of the app.{' '}
-                {userCoords
-                  ? 'Providers are listed nearest first.'
-                  : 'Allow location access to list the nearest providers first.'}
+                {t('mapList.unavailable')}{' '}
+                {userCoords ? t('mapList.sorted') : t('mapList.allowLocation')}
               </AppText>
             </View>
           </View>
@@ -49,8 +48,8 @@ export function ProviderListFallback({ pins, userCoords }: ProviderListFallbackP
         ListEmptyComponent={
           <EmptyState
             icon="location-outline"
-            title="No providers on the map yet"
-            message="Providers appear here once they add a map location to their profile or listings."
+            title={t('mapList.emptyTitle')}
+            message={t('mapList.emptyMessage')}
           />
         }
         renderItem={({ item }) => <ProviderCard provider={item.provider} />}

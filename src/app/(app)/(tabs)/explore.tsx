@@ -13,6 +13,7 @@ import { useActiveServices } from '@/hooks/useServices';
 import { colors, spacing } from '@/theme';
 import { filterServices } from '@/utils/search';
 
+import { t } from '@/i18n';
 /** Browse Services: every active listing, filterable by category. */
 export default function ExploreScreen() {
   const params = useLocalSearchParams<{ category?: string }>();
@@ -31,7 +32,7 @@ export default function ExploreScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
-        <AppText variant="title">Explore services</AppText>
+        <AppText variant="title">{t('explore.title')}</AppText>
         <SearchBar onPress={() => router.push({ pathname: '/search', params: { category } })} />
         <DataStatusNotice
           source={servicesQuery.data?.source}
@@ -45,8 +46,12 @@ export default function ExploreScreen() {
       <ServiceList
         query={servicesQuery}
         services={services}
-        emptyTitle={category ? `No ${getCategoryLabel(category)} services yet` : 'No services yet'}
-        emptyMessage="Check back soon, or try another category."
+        emptyTitle={
+          category
+            ? t('explore.emptyCategory', { category: getCategoryLabel(category) })
+            : t('services.emptyTitle')
+        }
+        emptyMessage={t('explore.emptyMessage')}
       />
     </SafeAreaView>
   );

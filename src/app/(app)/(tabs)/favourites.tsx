@@ -9,6 +9,7 @@ import { useFavouriteProviders, useFavourites } from '@/hooks/useFavourites';
 import { colors, spacing } from '@/theme';
 import { getErrorMessage } from '@/utils/errors';
 
+import { t } from '@/i18n';
 /** Saved providers, stored in Firestore against the signed-in account. */
 export default function FavouritesScreen() {
   const { profile } = useAuth();
@@ -23,7 +24,7 @@ export default function FavouritesScreen() {
 
   let body;
   if (providersQuery.isLoading) {
-    body = <LoadingState message="Loading favourites..." />;
+    body = <LoadingState message={t('favourites.loading')} />;
   } else if (providersQuery.isError) {
     body = (
       <ErrorState
@@ -50,9 +51,9 @@ export default function FavouritesScreen() {
         ListEmptyComponent={
           <EmptyState
             icon="heart-outline"
-            title="No favourites yet"
-            message="Tap the heart on a provider's profile to save them here."
-            actionLabel={profile?.role === 'provider' ? undefined : 'Explore services'}
+            title={t('favourites.emptyTitle')}
+            message={t('favourites.emptyMessage')}
+            actionLabel={profile?.role === 'provider' ? undefined : t('explore.title')}
             onAction={() => router.navigate('/explore')}
           />
         }
@@ -64,7 +65,7 @@ export default function FavouritesScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
-        <AppText variant="title">Favourites</AppText>
+        <AppText variant="title">{t('tabs.favourites')}</AppText>
       </View>
       {body}
     </SafeAreaView>

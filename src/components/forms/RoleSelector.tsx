@@ -6,22 +6,23 @@ import { AppText } from '@/components/common';
 import { colors, radius, spacing } from '@/theme';
 import type { UserRole } from '@/types/user';
 
+import { t, tMessage, type TranslationKey } from '@/i18n';
 const OPTIONS: {
   role: UserRole;
-  title: string;
-  description: string;
+  title: TranslationKey;
+  description: TranslationKey;
   icon: ComponentProps<typeof Ionicons>['name'];
 }[] = [
   {
     role: 'customer',
-    title: 'Customer',
-    description: 'Find and contact skilled people',
+    title: 'roles.customer',
+    description: 'roles.customerDescription',
     icon: 'search',
   },
   {
     role: 'provider',
-    title: 'Service Provider',
-    description: 'Advertise my skills and services',
+    title: 'roles.provider',
+    description: 'roles.providerDescription',
     icon: 'construct',
   },
 ];
@@ -36,7 +37,7 @@ export function RoleSelector({ value, onChange, error }: RoleSelectorProps) {
   return (
     <View style={styles.wrapper}>
       <AppText variant="label" color="textSecondary">
-        I want to join as a
+        {t('register.joinAs')}
       </AppText>
       <View style={styles.row} accessibilityRole="radiogroup">
         {OPTIONS.map((option) => {
@@ -48,7 +49,7 @@ export function RoleSelector({ value, onChange, error }: RoleSelectorProps) {
               style={[styles.option, selected && styles.optionSelected]}
               accessibilityRole="radio"
               accessibilityState={{ checked: selected }}
-              accessibilityLabel={`${option.title}: ${option.description}`}
+              accessibilityLabel={`${t(option.title)}: ${t(option.description)}`}
             >
               <Ionicons
                 name={option.icon}
@@ -56,10 +57,10 @@ export function RoleSelector({ value, onChange, error }: RoleSelectorProps) {
                 color={selected ? colors.primary : colors.textMuted}
               />
               <AppText variant="bodyStrong" color={selected ? 'primary' : 'textPrimary'}>
-                {option.title}
+                {t(option.title)}
               </AppText>
               <AppText variant="caption" color="textSecondary">
-                {option.description}
+                {t(option.description)}
               </AppText>
             </Pressable>
           );
@@ -67,7 +68,7 @@ export function RoleSelector({ value, onChange, error }: RoleSelectorProps) {
       </View>
       {error ? (
         <AppText variant="caption" color="error">
-          {error}
+          {tMessage(error)}
         </AppText>
       ) : null}
     </View>

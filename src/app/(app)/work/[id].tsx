@@ -1,5 +1,4 @@
 import { Ionicons } from '@expo/vector-icons';
-import { format } from 'date-fns';
 import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
 import type { ComponentProps } from 'react';
@@ -19,7 +18,9 @@ import { useAuth } from '@/hooks/useAuth';
 import { usePortfolioItem } from '@/hooks/usePortfolio';
 import { colors, radius, spacing } from '@/theme';
 import { getErrorMessage } from '@/utils/errors';
+import { formatDate } from '@/utils/formatting';
 
+import { t } from '@/i18n';
 function Detail({ icon, text }: { icon: ComponentProps<typeof Ionicons>['name']; text: string }) {
   return (
     <View style={styles.detailRow}>
@@ -36,7 +37,7 @@ export default function WorkDetailsScreen() {
   const itemQuery = usePortfolioItem(id ?? '');
   const item = itemQuery.data;
 
-  if (itemQuery.isLoading) return <LoadingState message="Loading project..." />;
+  if (itemQuery.isLoading) return <LoadingState message={t('work.loading')} />;
   if (itemQuery.isError) {
     return (
       <ErrorState
@@ -50,9 +51,9 @@ export default function WorkDetailsScreen() {
     return (
       <EmptyState
         icon="images-outline"
-        title="Project not found"
-        message="It may have been removed by the provider."
-        actionLabel="Go back"
+        title={t('work.notFoundTitle')}
+        message={t('common.removedByProvider')}
+        actionLabel={t('common.goBack')}
         onAction={() => router.back()}
       />
     );
@@ -73,19 +74,19 @@ export default function WorkDetailsScreen() {
         <Detail icon="pricetag-outline" text={getCategoryLabel(item.category)} />
         <Detail
           icon="calendar-outline"
-          text={`Completed ${format(item.completedAt, 'd MMMM yyyy')}`}
+          text={t('work.completed', { date: formatDate(item.completedAt) })}
         />
         {item.locationName !== '' && <Detail icon="location-outline" text={item.locationName} />}
       </Card>
       {isOwner ? (
         <AppButton
-          title="Edit project"
+          title={t('screens.editProject')}
           icon="create-outline"
           onPress={() => router.push({ pathname: '/edit-work/[id]', params: { id: item.itemId } })}
         />
       ) : (
         <AppButton
-          title="View provider"
+          title={t('work.viewProvider')}
           icon="person-outline"
           variant="secondary"
           onPress={() =>

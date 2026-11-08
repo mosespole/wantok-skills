@@ -18,6 +18,7 @@ import { useMyServices } from '@/hooks/useServices';
 import { colors, radius, spacing } from '@/theme';
 import { getErrorMessage } from '@/utils/errors';
 
+import { t } from '@/i18n';
 type IconName = ComponentProps<typeof Ionicons>['name'];
 
 function StatTile({
@@ -100,10 +101,10 @@ export function ProviderDashboard() {
 
   // Prompt providers to complete the profile details customers rely on.
   const missing = [
-    !profile.profileImageUrl && 'a profile photo',
-    !profile.bio && 'a short bio',
-    !profile.skillCategory && 'your main skill',
-    profile.latitude === null && 'your map location',
+    !profile.profileImageUrl && t('dashboard.missingPhoto'),
+    !profile.bio && t('dashboard.missingBio'),
+    !profile.skillCategory && t('dashboard.missingSkill'),
+    profile.latitude === null && t('dashboard.missingLocation'),
   ].filter((item): item is string => Boolean(item));
 
   return (
@@ -115,7 +116,7 @@ export function ProviderDashboard() {
     >
       <HeaderBanner>
         <AppText variant="caption" color="textOnPrimaryMuted">
-          Provider dashboard
+          {t('dashboard.label')}
         </AppText>
         <View style={styles.profileRow}>
           <View style={styles.avatarRing}>
@@ -129,7 +130,7 @@ export function ProviderDashboard() {
               <AppText variant="label" color="primary">
                 {profile.skillCategory
                   ? getCategoryLabel(profile.skillCategory)
-                  : 'Service Provider'}
+                  : t('roles.provider')}
               </AppText>
             </View>
             {profile.locationName !== '' && (
@@ -153,7 +154,7 @@ export function ProviderDashboard() {
           >
             <Ionicons name="sparkles-outline" size={20} color={colors.warning} />
             <AppText variant="caption" style={styles.flex}>
-              Customers trust complete profiles. Add {missing.join(', ')}.
+              {t('dashboard.completeProfile', { items: missing.join(', ') })}
             </AppText>
             <Ionicons name="chevron-forward" size={18} color={colors.warning} />
           </Pressable>
@@ -168,13 +169,13 @@ export function ProviderDashboard() {
         ) : (
           <View style={styles.stats}>
             <StatTile
-              label="Active listings"
+              label={t('dashboard.active')}
               value={countText(activeCount)}
               icon="checkmark-circle"
               tone="success"
             />
             <StatTile
-              label="Paused"
+              label={t('dashboard.paused')}
               value={countText(pausedCount)}
               icon="pause-circle"
               tone="warning"
@@ -183,13 +184,25 @@ export function ProviderDashboard() {
         )}
 
         <View>
-          <SectionHeader title="Manage" />
+          <SectionHeader title={t('dashboard.manage')} />
           <Card style={styles.actions}>
-            <ActionRow icon="add-circle-outline" title="Create a listing" href="/create-service" />
-            <ActionRow icon="briefcase-outline" title="Manage my services" href="/my-services" />
-            <ActionRow icon="images-outline" title="My past work gallery" href="/my-work" />
-            <ActionRow icon="person-circle-outline" title="Edit my profile" href="/edit-profile" />
-            <ActionRow icon="search-outline" title="Browse the marketplace" href="/search" last />
+            <ActionRow
+              icon="add-circle-outline"
+              title={t('common.createListing')}
+              href="/create-service"
+            />
+            <ActionRow
+              icon="briefcase-outline"
+              title={t('dashboard.manageServices')}
+              href="/my-services"
+            />
+            <ActionRow icon="images-outline" title={t('dashboard.pastWork')} href="/my-work" />
+            <ActionRow
+              icon="person-circle-outline"
+              title={t('dashboard.editProfile')}
+              href="/edit-profile"
+            />
+            <ActionRow icon="search-outline" title={t('dashboard.browse')} href="/search" last />
           </Card>
         </View>
       </View>

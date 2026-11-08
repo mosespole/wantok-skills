@@ -10,6 +10,7 @@ import { colors, radius, spacing } from '@/theme';
 import type { ServiceWithProvider } from '@/types/service';
 import { formatPrice } from '@/utils/formatting';
 
+import { t } from '@/i18n';
 interface ServiceCardProps {
   service: ServiceWithProvider;
   /** Distance from the user in km, when known. */
@@ -22,14 +23,18 @@ interface ServiceCardProps {
  */
 export function ServiceCard({ service, distanceKm }: ServiceCardProps) {
   const category = getCategoryStyle(service.category);
-  const providerName = service.provider?.fullName ?? 'Wantok Skills provider';
+  const providerName = service.provider?.fullName ?? t('services.providerFallback');
   const distanceText =
     distanceKm != null ? `${distanceKm < 1 ? '<1' : Math.round(distanceKm)} km` : null;
 
   return (
     <Card
       onPress={() => router.push({ pathname: '/service/[id]', params: { id: service.serviceId } })}
-      accessibilityLabel={`${service.title} by ${providerName}, ${formatPrice(service.startingPrice)}`}
+      accessibilityLabel={t('services.cardLabel', {
+        title: service.title,
+        provider: providerName,
+        price: formatPrice(service.startingPrice),
+      })}
       style={styles.card}
     >
       <View style={styles.media}>

@@ -1,32 +1,38 @@
 import { FirebaseError } from 'firebase/app';
 
-/** Human-readable messages for the Firebase error codes users are most likely to hit. */
-const FIREBASE_MESSAGES: Record<string, string> = {
-  'auth/invalid-credential': 'Incorrect email or password.',
-  'auth/invalid-email': 'That email address is not valid.',
-  'auth/user-disabled': 'This account has been disabled.',
-  'auth/user-not-found': 'Incorrect email or password.',
-  'auth/wrong-password': 'Incorrect email or password.',
-  'auth/email-already-in-use': 'An account with this email already exists. Try logging in.',
-  'auth/weak-password': 'Choose a stronger password (at least 8 characters).',
-  'auth/too-many-requests': 'Too many attempts. Please wait a few minutes and try again.',
-  'auth/network-request-failed': 'No internet connection. Check your connection and try again.',
-  'permission-denied': 'You do not have permission to do that.',
-  unavailable: 'The service is unavailable. Check your internet connection and try again.',
-  'deadline-exceeded': 'The request took too long. Check your connection and try again.',
-  'not-found': 'That item no longer exists.',
-  'storage/unauthorized': 'You do not have permission to upload this file.',
-  'storage/canceled': 'The upload was cancelled.',
-  'storage/retry-limit-exceeded': 'The upload kept failing. Check your connection and try again.',
+import { t, tMessage, type TranslationKey } from '@/i18n';
+
+/** Messages (as translation keys) for the Firebase error codes users are most likely to hit. */
+const FIREBASE_MESSAGES: Record<string, TranslationKey> = {
+  'auth/invalid-credential': 'errors.invalidCredentials',
+  'auth/invalid-email': 'errors.invalidEmail',
+  'auth/user-disabled': 'errors.userDisabled',
+  'auth/user-not-found': 'errors.invalidCredentials',
+  'auth/wrong-password': 'errors.invalidCredentials',
+  'auth/email-already-in-use': 'errors.emailInUse',
+  'auth/weak-password': 'errors.weakPassword',
+  'auth/too-many-requests': 'errors.tooManyRequests',
+  'auth/network-request-failed': 'errors.network',
+  'permission-denied': 'errors.permissionDenied',
+  unavailable: 'errors.unavailable',
+  'deadline-exceeded': 'errors.deadline',
+  'not-found': 'errors.notFound',
+  'storage/unauthorized': 'errors.storageUnauthorized',
+  'storage/canceled': 'errors.uploadCancelled',
+  'storage/retry-limit-exceeded': 'errors.uploadRetry',
 };
 
-/** Converts any thrown value into a message that is safe and useful to show the user. */
+/**
+ * Converts any thrown value into a message that is safe and useful to show the user,
+ * in the app's current language. App errors carry a translation key as their message.
+ */
 export function getErrorMessage(error: unknown): string {
   if (error instanceof FirebaseError) {
-    return FIREBASE_MESSAGES[error.code] ?? 'Something went wrong. Please try again.';
+    const key = FIREBASE_MESSAGES[error.code];
+    return key ? t(key) : t('errors.generic');
   }
   if (error instanceof Error && error.message) {
-    return error.message;
+    return tMessage(error.message);
   }
-  return 'Something went wrong. Please try again.';
+  return t('errors.generic');
 }

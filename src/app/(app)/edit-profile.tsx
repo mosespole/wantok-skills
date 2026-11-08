@@ -17,6 +17,7 @@ import { getErrorMessage } from '@/utils/errors';
 import { toLocalPhoneDigits } from '@/utils/formatting';
 import { profileSchema, type ProfileFormValues } from '@/utils/validation';
 
+import { t } from '@/i18n';
 export default function EditProfileScreen() {
   const { profile } = useAuth();
   const updateProfile = useUpdateProfile();
@@ -77,7 +78,7 @@ export default function EditProfileScreen() {
       <FormInput
         control={control}
         name="fullName"
-        label="Full name"
+        label={t('fields.fullName')}
         icon="person-outline"
         autoCapitalize="words"
         maxLength={60}
@@ -85,7 +86,7 @@ export default function EditProfileScreen() {
       <FormInput
         control={control}
         name="phoneNumber"
-        label="Phone number"
+        label={t('fields.phoneNumber')}
         icon="call-outline"
         keyboardType="phone-pad"
         maxLength={16}
@@ -98,7 +99,7 @@ export default function EditProfileScreen() {
             name="skillCategory"
             render={({ field: { value, onChange }, fieldState: { error } }) => (
               <CategoryPicker
-                label="Main skill"
+                label={t('fields.mainSkill')}
                 value={value === '' ? undefined : value}
                 onChange={onChange}
                 error={error?.message}
@@ -108,8 +109,8 @@ export default function EditProfileScreen() {
           <FormInput
             control={control}
             name="bio"
-            label="About you"
-            placeholder="Your experience, qualifications and the areas you cover"
+            label={t('fields.aboutYou')}
+            placeholder={t('editProfile.bioPlaceholder')}
             multiline
             optional
             maxLength={500}
@@ -120,9 +121,9 @@ export default function EditProfileScreen() {
       <FormInput
         control={control}
         name="locationName"
-        label="Location"
+        label={t('fields.location')}
         icon="location-outline"
-        placeholder="e.g. Eriku, Lae"
+        placeholder={t('placeholders.location')}
         optional
         maxLength={100}
       />
@@ -145,10 +146,10 @@ export default function EditProfileScreen() {
       )}
 
       <AppText variant="caption" color="textMuted" style={styles.note}>
-        Your email ({profile.email}) and account type cannot be changed.
+        {t('editProfile.emailNote', { email: profile.email })}
       </AppText>
 
-      <AppButton title="Save profile" onPress={onSubmit} loading={isSubmitting} />
+      <AppButton title={t('editProfile.save')} onPress={onSubmit} loading={isSubmitting} />
     </Screen>
   );
 }

@@ -17,7 +17,7 @@ import { app } from './firebaseConfig';
  */
 function getImageStorage() {
   if (!STORAGE_ENABLED) {
-    throw new Error('Photo uploads are not available yet.');
+    throw new Error('errors.uploadsUnavailable');
   }
   return getStorage(app);
 }
@@ -67,14 +67,14 @@ export async function uploadImage({
 }: UploadImageOptions): Promise<string> {
   const contentType = resolveContentType(localUri, mimeType);
   if (!ALLOWED_TYPES.includes(contentType)) {
-    throw new Error('Please choose a JPEG, PNG or WebP photo.');
+    throw new Error('errors.photoType');
   }
 
   // React Native can turn a local file into a Blob via fetch, which Firebase can upload.
   const response = await fetch(localUri);
   const blob = await response.blob();
   if (blob.size > MAX_IMAGE_BYTES) {
-    throw new Error('This photo is larger than 5 MB. Please choose a smaller one.');
+    throw new Error('errors.photoTooLarge');
   }
 
   // A unique name per upload, so a replaced photo is never served from an old cache.

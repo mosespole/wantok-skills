@@ -58,7 +58,7 @@ export function useSaveReview(providerId: string) {
       comment: string;
       isUpdate: boolean;
     }) => {
-      if (!user || !profile) throw new Error('You must be logged in to leave a review.');
+      if (!user || !profile) throw new Error('errors.loginToReview');
       await ensureOnline();
       await saveReview(
         { customerId: user.uid, customerName: profile.fullName, providerId, rating, comment },
@@ -75,7 +75,7 @@ export function useDeleteReview(providerId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async () => {
-      if (!user) throw new Error('You must be logged in.');
+      if (!user) throw new Error('errors.loginRequired');
       await ensureOnline();
       await deleteReview(user.uid, providerId);
     },

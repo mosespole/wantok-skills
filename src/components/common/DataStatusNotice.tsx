@@ -8,6 +8,7 @@ import { formatRelativeDate } from '@/utils/formatting';
 
 import { AppText } from './AppText';
 
+import { t } from '@/i18n';
 interface DataStatusNoticeProps {
   source: DataSource | undefined;
   updatedAt: Date | undefined;
@@ -23,10 +24,10 @@ export function DataStatusNotice({ source, updatedAt, onRetry }: DataStatusNotic
   const showingSaved = source === 'cache';
   if (!isOffline && !showingSaved) return null;
 
-  const title = isOffline ? 'You are offline' : 'Could not reach the server';
+  const title = isOffline ? t('status.offline') : t('status.serverUnreachable');
   const detail = showingSaved
-    ? `Showing listings saved ${formatRelativeDate(updatedAt ?? null)}. They may be out of date.`
-    : 'Showing the latest listings loaded. New changes will appear when you reconnect.';
+    ? t('status.showingSaved', { when: formatRelativeDate(updatedAt ?? null) })
+    : t('status.showingLatest');
 
   return (
     <View style={styles.notice} accessibilityRole="alert">
@@ -42,7 +43,7 @@ export function DataStatusNotice({ source, updatedAt, onRetry }: DataStatusNotic
       {onRetry && !isOffline && (
         <Pressable onPress={onRetry} hitSlop={8} accessibilityRole="button">
           <AppText variant="label" color="primary">
-            Retry
+            {t('common.retry')}
           </AppText>
         </Pressable>
       )}

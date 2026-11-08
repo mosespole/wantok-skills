@@ -62,7 +62,7 @@ export function useCreateService() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (input: ServiceInput) => {
-      if (!user) throw new Error('You must be logged in to create a listing.');
+      if (!user) throw new Error('errors.loginToCreateListing');
       await ensureOnline();
       return createService(user.uid, input);
     },

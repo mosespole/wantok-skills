@@ -18,6 +18,7 @@ import { DateField } from './DateField';
 import { FormError } from './FormError';
 import { FormInput } from './FormInput';
 
+import { t } from '@/i18n';
 interface PortfolioFormProps {
   defaultValues: DefaultValues<PortfolioFormValues>;
   /** Existing photo when editing. */
@@ -64,7 +65,7 @@ export function PortfolioForm({
   const submit = handleSubmit(async (values) => {
     setSubmitError(null);
     if (!imageData) {
-      setPhotoError('Add a photo of the finished work.');
+      setPhotoError(t('portfolio.photoRequired'));
       return;
     }
     try {
@@ -80,13 +81,13 @@ export function PortfolioForm({
 
       <View style={styles.photoBlock}>
         <AppText variant="label" color="textSecondary">
-          Photo of the finished work
+          {t('portfolio.photoLabel')}
         </AppText>
         {imageData ? (
           <Pressable
             onPress={choosePhoto}
             accessibilityRole="button"
-            accessibilityLabel="Change photo"
+            accessibilityLabel={t('portfolio.changePhoto')}
           >
             <Image source={{ uri: imageData }} style={styles.photo} contentFit="cover" />
           </Pressable>
@@ -95,23 +96,23 @@ export function PortfolioForm({
             onPress={choosePhoto}
             style={styles.photoEmpty}
             accessibilityRole="button"
-            accessibilityLabel="Add a photo"
+            accessibilityLabel={t('portfolio.addPhoto')}
           >
             <Ionicons name="camera-outline" size={32} color={colors.primary} />
             <AppText variant="label" color="primary">
-              Add a photo
+              {t('portfolio.addPhoto')}
             </AppText>
           </Pressable>
         )}
         {processing && (
           <AppText variant="caption" color="textSecondary">
-            Preparing photo...
+            {t('portfolio.preparing')}
           </AppText>
         )}
         {imageData && !processing && (
           <Pressable onPress={choosePhoto} accessibilityRole="button">
             <AppText variant="label" color="primary">
-              Choose a different photo
+              {t('common.chooseDifferentPhoto')}
             </AppText>
           </Pressable>
         )}
@@ -125,8 +126,8 @@ export function PortfolioForm({
       <FormInput
         control={control}
         name="caption"
-        label="Caption"
-        placeholder="e.g. Built-in wardrobe with sliding doors"
+        label={t('portfolio.caption')}
+        placeholder={t('portfolio.captionPlaceholder')}
         maxLength={120}
       />
 
@@ -135,7 +136,7 @@ export function PortfolioForm({
         name="category"
         render={({ field: { value, onChange }, fieldState: { error } }) => (
           <CategoryPicker
-            label="Project category"
+            label={t('portfolio.category')}
             value={value}
             onChange={onChange}
             error={error?.message}
@@ -146,9 +147,9 @@ export function PortfolioForm({
       <FormInput
         control={control}
         name="locationName"
-        label="Location"
+        label={t('fields.location')}
         icon="location-outline"
-        placeholder="e.g. Taraka, Lae"
+        placeholder={t('portfolio.locationPlaceholder')}
         optional
         maxLength={100}
       />
@@ -158,7 +159,7 @@ export function PortfolioForm({
         name="completedAt"
         render={({ field: { value, onChange }, fieldState: { error } }) => (
           <DateField
-            label="Date completed"
+            label={t('portfolio.dateCompleted')}
             value={value}
             onChange={onChange}
             maximumDate={new Date()}

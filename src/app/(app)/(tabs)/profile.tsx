@@ -11,6 +11,7 @@ import {
   Card,
   ConfirmDialog,
   HeaderBanner,
+  LanguageSwitch,
   Screen,
 } from '@/components/common';
 import { getCategoryLabel } from '@/constants/categories';
@@ -19,6 +20,7 @@ import { colors, spacing } from '@/theme';
 import { getErrorMessage } from '@/utils/errors';
 import { formatPhone } from '@/utils/formatting';
 
+import { t } from '@/i18n';
 function InfoRow({
   icon,
   label,
@@ -75,27 +77,46 @@ export default function ProfileScreen() {
         </AppText>
         <View style={styles.roleBadge}>
           <AppText variant="label" color="primary">
-            {isProvider ? 'Service Provider' : 'Customer'}
+            {isProvider ? t('roles.provider') : t('roles.customer')}
           </AppText>
         </View>
       </HeaderBanner>
 
       <View style={styles.content}>
         <Card style={styles.card}>
-          <InfoRow icon="mail-outline" label="Email" value={profile.email} />
-          <InfoRow icon="call-outline" label="Phone" value={formatPhone(profile.phoneNumber)} />
+          <InfoRow icon="mail-outline" label={t('fields.email')} value={profile.email} />
+          <InfoRow
+            icon="call-outline"
+            label={t('fields.phone')}
+            value={formatPhone(profile.phoneNumber)}
+          />
           {isProvider && (
             <InfoRow
               icon="construct-outline"
-              label="Main skill"
-              value={profile.skillCategory ? getCategoryLabel(profile.skillCategory) : 'Not set'}
+              label={t('fields.mainSkill')}
+              value={
+                profile.skillCategory ? getCategoryLabel(profile.skillCategory) : t('common.notSet')
+              }
             />
           )}
           <InfoRow
             icon="location-outline"
-            label="Location"
-            value={profile.locationName || 'Not set'}
+            label={t('fields.location')}
+            value={profile.locationName || t('common.notSet')}
           />
+        </Card>
+
+        <Card style={styles.languageCard}>
+          <View style={styles.infoRow}>
+            <Ionicons name="language-outline" size={20} color={colors.textMuted} />
+            <View style={styles.infoText}>
+              <AppText variant="bodyStrong">{t('language.label')}</AppText>
+              <AppText variant="caption" color="textMuted">
+                {t('language.hint')}
+              </AppText>
+            </View>
+          </View>
+          <LanguageSwitch />
         </Card>
 
         {logoutError && (
@@ -105,14 +126,14 @@ export default function ProfileScreen() {
         )}
 
         <AppButton
-          title="Edit profile"
+          title={t('screens.editProfile')}
           icon="create-outline"
           variant="secondary"
           onPress={() => router.push('/edit-profile')}
         />
 
         <AppButton
-          title="Log out"
+          title={t('auth.logout')}
           variant="outline"
           icon="log-out-outline"
           onPress={() => setConfirmVisible(true)}
@@ -120,9 +141,9 @@ export default function ProfileScreen() {
 
         <ConfirmDialog
           visible={confirmVisible}
-          title="Log out?"
-          message="You will need to log in again to use Wantok Skills."
-          confirmLabel="Log out"
+          title={t('profile.logoutTitle')}
+          message={t('profile.logoutMessage')}
+          confirmLabel={t('auth.logout')}
           destructive
           loading={loggingOut}
           onConfirm={handleLogout}
@@ -148,6 +169,7 @@ const styles = StyleSheet.create({
   },
   content: { padding: spacing.lg, gap: spacing.lg },
   card: { gap: spacing.lg },
+  languageCard: { gap: spacing.md },
   infoRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   infoText: { flex: 1 },
 });

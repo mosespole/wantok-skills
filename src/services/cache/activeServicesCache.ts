@@ -37,7 +37,7 @@ export async function fetchActiveServicesWithFallback(): Promise<ActiveServicesR
     const services = await withTimeout(
       getActiveServices(),
       REMOTE_TIMEOUT_MS,
-      'Loading listings took too long. Check your connection and try again.',
+      'errors.listingsTimeout',
     );
     await saveCache(CACHE_KEYS.activeServices, services.map(withoutEmbeddedPhotos));
     return { services, source: 'live', updatedAt: new Date() };

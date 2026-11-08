@@ -12,6 +12,7 @@ import { spacing } from '@/theme';
 import { getErrorMessage } from '@/utils/errors';
 import { loginSchema, type LoginFormValues } from '@/utils/validation';
 
+import { t } from '@/i18n';
 export default function LoginScreen() {
   const { login, status } = useAuth();
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -41,8 +42,8 @@ export default function LoginScreen() {
   return (
     <Screen edges={['bottom']}>
       <View style={styles.header}>
-        <AppText variant="title">Welcome back</AppText>
-        <AppText color="textSecondary">Log in to continue to Wantok Skills.</AppText>
+        <AppText variant="title">{t('login.title')}</AppText>
+        <AppText color="textSecondary">{t('login.intro')}</AppText>
       </View>
 
       <FormError message={submitError} />
@@ -50,9 +51,9 @@ export default function LoginScreen() {
       <FormInput
         control={control}
         name="email"
-        label="Email"
+        label={t('fields.email')}
         icon="mail-outline"
-        placeholder="you@example.com"
+        placeholder={t('placeholders.email')}
         keyboardType="email-address"
         autoCapitalize="none"
         autoComplete="email"
@@ -62,9 +63,9 @@ export default function LoginScreen() {
       <FormInput
         control={control}
         name="password"
-        label="Password"
+        label={t('fields.password')}
         icon="lock-closed-outline"
-        placeholder="Your password"
+        placeholder={t('login.passwordPlaceholder')}
         secureToggle
         autoCapitalize="none"
         autoComplete="current-password"
@@ -75,17 +76,17 @@ export default function LoginScreen() {
 
       <Link href="/forgot-password" style={styles.forgot}>
         <AppText variant="label" color="primary">
-          Forgot password?
+          {t('login.forgot')}
         </AppText>
       </Link>
 
-      <AppButton title="Log in" onPress={onSubmit} loading={busy} />
+      <AppButton title={t('auth.login')} onPress={onSubmit} loading={busy} />
 
       <View style={styles.footer}>
-        <AppText color="textSecondary">New to Wantok Skills?</AppText>
+        <AppText color="textSecondary">{t('login.newHere')}</AppText>
         <Link href="/register" replace>
           <AppText variant="bodyStrong" color="primary">
-            Create an account
+            {t('auth.createAnAccount')}
           </AppText>
         </Link>
       </View>

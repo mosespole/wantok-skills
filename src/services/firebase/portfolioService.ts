@@ -63,9 +63,7 @@ function toFirestore(input: PortfolioInput) {
 export async function addPortfolioItem(providerId: string, input: PortfolioInput): Promise<string> {
   const existing = await getDocs(query(portfolioCollection, where('providerId', '==', providerId)));
   if (existing.size >= MAX_PORTFOLIO_ITEMS) {
-    throw new Error(
-      `You can show up to ${MAX_PORTFOLIO_ITEMS} projects. Delete one to add another.`,
-    );
+    throw new Error('errors.portfolioFull');
   }
   const reference = await addDoc(portfolioCollection, {
     ...toFirestore(input),

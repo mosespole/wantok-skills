@@ -10,6 +10,7 @@ import { reviewSchema } from '@/utils/validation';
 
 import { StarInput } from './StarRating';
 
+import { t, tMessage } from '@/i18n';
 interface ReviewFormProps {
   providerId: string;
   providerName: string;
@@ -32,7 +33,8 @@ export function ReviewForm({ providerId, providerName, existing }: ReviewFormPro
     setSaved(false);
     const parsed = reviewSchema.safeParse({ rating, comment });
     if (!parsed.success) {
-      setError(parsed.error.issues[0]?.message ?? 'Check your review and try again.');
+      const issue = parsed.error.issues[0]?.message;
+      setError(issue ? tMessage(issue) : t('reviews.checkReview'));
       return;
     }
     try {
@@ -59,7 +61,9 @@ export function ReviewForm({ providerId, providerName, existing }: ReviewFormPro
 
   return (
     <Card style={styles.card}>
-      <AppText variant="bodyStrong">{existing ? 'Your review' : `Rate ${providerName}`}</AppText>
+      <AppText variant="bodyStrong">
+        {existing ? t('reviews.yours') : t('reviews.rate', { name: providerName })}
+      </AppText>
       <StarInput
         value={rating}
         onChange={(stars) => {
@@ -68,14 +72,14 @@ export function ReviewForm({ providerId, providerName, existing }: ReviewFormPro
         }}
       />
       <AppInput
-        label="Comment"
+        label={t('reviews.comment')}
         optional
         value={comment}
         onChangeText={(text) => {
           setComment(text);
           setSaved(false);
         }}
-        placeholder="How was the work? Was it on time and good value?"
+        placeholder={t('reviews.commentPlaceholder')}
         multiline
         maxLength={500}
       />
@@ -86,20 +90,20 @@ export function ReviewForm({ providerId, providerName, existing }: ReviewFormPro
       )}
       {saved && (
         <AppText variant="caption" color="success">
-          Thank you. Your review has been saved.
+          {t('reviews.saved')}
         </AppText>
       )}
       <View style={styles.actions}>
         {existing && (
           <AppButton
-            title="Delete"
+            title={t('common.delete')}
             variant="ghost"
             onPress={() => setConfirmDelete(true)}
             fullWidth={false}
           />
         )}
         <AppButton
-          title={existing ? 'Update review' : 'Post review'}
+          title={existing ? t('reviews.update') : t('reviews.post')}
           onPress={submit}
           loading={saveReview.isPending}
           fullWidth={false}
@@ -108,9 +112,9 @@ export function ReviewForm({ providerId, providerName, existing }: ReviewFormPro
 
       <ConfirmDialog
         visible={confirmDelete}
-        title="Delete your review?"
-        message="Your rating and comment will be removed."
-        confirmLabel="Delete"
+        title={t('reviews.deleteTitle')}
+        message={t('reviews.deleteMessage')}
+        confirmLabel={t('common.delete')}
         destructive
         loading={deleteReview.isPending}
         onConfirm={remove}

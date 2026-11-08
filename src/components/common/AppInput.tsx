@@ -6,6 +6,7 @@ import { colors, radius, spacing, typography } from '@/theme';
 
 import { AppText } from './AppText';
 
+import { t, tMessage } from '@/i18n';
 interface AppInputProps extends TextInputProps {
   label: string;
   error?: string;
@@ -41,7 +42,7 @@ export function AppInput({
         {optional && (
           <AppText variant="caption" color="textMuted">
             {' '}
-            (optional)
+            {t('common.optional')}
           </AppText>
         )}
       </AppText>
@@ -70,7 +71,7 @@ export function AppInput({
             onPress={() => setHidden((value) => !value)}
             hitSlop={10}
             accessibilityRole="button"
-            accessibilityLabel={hidden ? 'Show password' : 'Hide password'}
+            accessibilityLabel={hidden ? t('auth.showPassword') : t('auth.hidePassword')}
           >
             <Ionicons
               name={hidden ? 'eye-outline' : 'eye-off-outline'}
@@ -82,7 +83,7 @@ export function AppInput({
       </View>
       {error ? (
         <AppText variant="caption" color="error">
-          {error}
+          {tMessage(error)}
         </AppText>
       ) : null}
     </View>

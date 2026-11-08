@@ -20,6 +20,7 @@ import {
 } from '@/hooks/usePortfolio';
 import { getErrorMessage } from '@/utils/errors';
 
+import { t } from '@/i18n';
 export default function EditWorkScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { user } = useAuth();
@@ -34,7 +35,7 @@ export default function EditWorkScreen() {
   // After a delete the item query is cleared; render nothing while navigating back,
   // instead of briefly flashing "Project unavailable".
   if (deleteItem.isSuccess) return null;
-  if (itemQuery.isLoading) return <LoadingState message="Loading project..." />;
+  if (itemQuery.isLoading) return <LoadingState message={t('work.loading')} />;
   if (itemQuery.isError) {
     return (
       <ErrorState
@@ -49,9 +50,9 @@ export default function EditWorkScreen() {
     return (
       <EmptyState
         icon="lock-closed-outline"
-        title="Project unavailable"
-        message="This project does not exist or does not belong to you."
-        actionLabel="Go back"
+        title={t('editWork.unavailableTitle')}
+        message={t('editWork.unavailableMessage')}
+        actionLabel={t('common.goBack')}
         onAction={() => router.back()}
       />
     );
@@ -72,7 +73,7 @@ export default function EditWorkScreen() {
   return (
     <Screen edges={['bottom']}>
       <PortfolioForm
-        submitLabel="Save changes"
+        submitLabel={t('common.saveChanges')}
         initialImageData={item.imageData}
         defaultValues={{
           caption: item.caption,
@@ -88,7 +89,7 @@ export default function EditWorkScreen() {
 
       <FormError message={deleteError} />
       <AppButton
-        title="Delete project"
+        title={t('work.delete')}
         icon="trash-outline"
         variant="ghost"
         onPress={() => setConfirmVisible(true)}
@@ -96,9 +97,9 @@ export default function EditWorkScreen() {
 
       <ConfirmDialog
         visible={confirmVisible}
-        title="Delete this project?"
-        message={`"${item.caption}" will be removed from your past work. This cannot be undone.`}
-        confirmLabel="Delete"
+        title={t('work.deleteTitle')}
+        message={t('work.deleteMessage', { caption: item.caption })}
+        confirmLabel={t('common.delete')}
         destructive
         loading={deleteItem.isPending}
         onConfirm={handleDelete}

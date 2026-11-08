@@ -26,6 +26,7 @@ import { colors, radius, spacing } from '@/theme';
 import { getErrorMessage } from '@/utils/errors';
 import { formatPrice, formatRelativeDate } from '@/utils/formatting';
 
+import { t } from '@/i18n';
 function DetailRow({
   icon,
   text,
@@ -51,7 +52,7 @@ export default function ServiceDetailsScreen() {
   const listing = serviceQuery.data;
 
   if (serviceQuery.isLoading) {
-    return <LoadingState message="Loading listing..." />;
+    return <LoadingState message={t('listing.loading')} />;
   }
   if (serviceQuery.isError) {
     return (
@@ -66,9 +67,9 @@ export default function ServiceDetailsScreen() {
     return (
       <EmptyState
         icon="search-outline"
-        title="Listing not found"
-        message="It may have been removed by the provider."
-        actionLabel="Go back"
+        title={t('listing.notFoundTitle')}
+        message={t('common.removedByProvider')}
+        actionLabel={t('common.goBack')}
         onAction={() => router.back()}
       />
     );
@@ -99,7 +100,7 @@ export default function ServiceDetailsScreen() {
           source={{ uri: listing.imageUrl }}
           style={styles.image}
           contentFit="cover"
-          accessibilityLabel={`Photo for ${listing.title}`}
+          accessibilityLabel={t('listing.photoFor', { title: listing.title })}
         />
       ) : (
         <View style={styles.imagePlaceholder}>
@@ -119,7 +120,7 @@ export default function ServiceDetailsScreen() {
         </AppText>
         {isOwner && !listing.isActive && (
           <AppText variant="caption" color="warning">
-            Paused: customers cannot see this listing.
+            {t('listing.pausedNote')}
           </AppText>
         )}
       </View>
@@ -127,12 +128,15 @@ export default function ServiceDetailsScreen() {
       <Card style={styles.section}>
         <DetailRow icon="location-outline" text={listing.locationName} />
         {listing.createdAt && (
-          <DetailRow icon="time-outline" text={`Posted ${formatRelativeDate(listing.createdAt)}`} />
+          <DetailRow
+            icon="time-outline"
+            text={t('listing.posted', { when: formatRelativeDate(listing.createdAt) })}
+          />
         )}
       </Card>
 
       <View style={styles.section}>
-        <AppText variant="subtitle">About this service</AppText>
+        <AppText variant="subtitle">{t('listing.about')}</AppText>
         <AppText color="textSecondary">{listing.description}</AppText>
       </View>
 
@@ -144,12 +148,12 @@ export default function ServiceDetailsScreen() {
               ? undefined
               : () => router.push({ pathname: '/provider/[id]', params: { id: provider.uid } })
           }
-          accessibilityLabel={`View ${provider.fullName}'s profile`}
+          accessibilityLabel={t('common.viewProfileOf', { name: provider.fullName })}
         >
           <Avatar name={provider.fullName} imageUrl={provider.profileImageUrl} size={52} />
           <View style={styles.providerText}>
             <AppText variant="caption" color="textMuted">
-              Offered by
+              {t('listing.offeredBy')}
             </AppText>
             <AppText variant="bodyStrong">{provider.fullName}</AppText>
           </View>
@@ -161,14 +165,14 @@ export default function ServiceDetailsScreen() {
         <View style={styles.section}>
           <FormError message={deleteFlow.error} />
           <AppButton
-            title="Edit listing"
+            title={t('screens.editListing')}
             icon="create-outline"
             onPress={() =>
               router.push({ pathname: '/edit-service/[id]', params: { id: listing.serviceId } })
             }
           />
           <AppButton
-            title="Delete listing"
+            title={t('listing.delete')}
             icon="trash-outline"
             variant="ghost"
             onPress={() => deleteFlow.requestDelete(listing)}
@@ -177,15 +181,15 @@ export default function ServiceDetailsScreen() {
       ) : (
         <ContactButtons
           phone={listing.contactNumber}
-          whatsAppMessage={`Hello, I found your "${listing.title}" listing on Wantok Skills.`}
+          whatsAppMessage={t('listing.whatsAppMessage', { title: listing.title })}
         />
       )}
 
       <ConfirmDialog
         visible={deleteFlow.target !== null}
-        title="Delete listing?"
-        message={`"${listing.title}" will be permanently removed. This cannot be undone.`}
-        confirmLabel="Delete"
+        title={t('listing.deleteTitle')}
+        message={t('listing.deleteMessage', { title: listing.title })}
+        confirmLabel={t('common.delete')}
         destructive
         loading={deleteFlow.isDeleting}
         onConfirm={deleteFlow.confirmDelete}

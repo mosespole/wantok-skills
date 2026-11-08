@@ -71,7 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const profile = await withTimeout(
         getUserProfile(user.uid),
         PROFILE_TIMEOUT_MS,
-        'Loading your account took too long. Check your connection and try again.',
+        'errors.accountTimeout',
       );
       if (currentUid.current !== user.uid) return;
       if (profile) void saveCachedProfile(profile);
@@ -82,7 +82,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               status: 'error',
               user,
               profile: null,
-              errorMessage: 'Your account profile could not be found. Please contact support.',
+              errorMessage: 'errors.profileNotFound',
             },
       );
     } catch (error) {

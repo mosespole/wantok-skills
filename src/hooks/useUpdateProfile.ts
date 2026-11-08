@@ -12,7 +12,7 @@ export function useUpdateProfile() {
 
   return useMutation({
     mutationFn: async (updates: EditableProfileFields) => {
-      if (!user) throw new Error('You must be logged in to update your profile.');
+      if (!user) throw new Error('errors.loginToUpdateProfile');
       await ensureOnline();
       await updateUserProfile(user.uid, updates);
     },

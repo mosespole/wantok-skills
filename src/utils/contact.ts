@@ -7,7 +7,7 @@ export async function callPhone(phone: string): Promise<void> {
   try {
     await Linking.openURL(`tel:+${toInternationalPhone(phone)}`);
   } catch {
-    throw new Error('This device cannot make phone calls.');
+    throw new Error('errors.noPhoneCalls');
   }
 }
 
@@ -20,6 +20,6 @@ export async function openWhatsApp(phone: string, message?: string): Promise<voi
   try {
     await Linking.openURL(`https://wa.me/${toInternationalPhone(phone)}${text}`);
   } catch {
-    throw new Error('WhatsApp could not be opened on this device.');
+    throw new Error('errors.noWhatsApp');
   }
 }

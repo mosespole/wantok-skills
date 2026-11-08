@@ -2,7 +2,7 @@ import * as Network from 'expo-network';
 
 /** Thrown when an action needs the internet but the device is offline. */
 export class OfflineError extends Error {
-  constructor(message = 'You are offline. Connect to the internet and try again.') {
+  constructor(message = 'errors.offline') {
     super(message);
     this.name = 'OfflineError';
   }

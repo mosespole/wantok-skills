@@ -5,6 +5,7 @@ import { AppButton, ErrorState, Screen } from '@/components/common';
 import { useAuth } from '@/hooks/useAuth';
 import { spacing } from '@/theme';
 
+import { t, tMessage } from '@/i18n';
 /** Shown when the user is signed in but their profile could not be loaded (e.g. offline). */
 export default function AccountErrorScreen() {
   const { errorMessage, refreshProfile, logout } = useAuth();
@@ -22,13 +23,13 @@ export default function AccountErrorScreen() {
   return (
     <Screen scroll={false}>
       <ErrorState
-        message={errorMessage ?? 'We could not load your account.'}
+        message={errorMessage ? tMessage(errorMessage) : t('accountError.default')}
         onRetry={handleRetry}
         retrying={retrying}
       />
       <View style={styles.footer}>
         <AppButton
-          title="Log out"
+          title={t('auth.logout')}
           variant="ghost"
           icon="log-out-outline"
           // A failed logout leaves the user on this screen; swallow it instead of crashing.

@@ -6,17 +6,16 @@ import type { CategoryId } from '@/constants/categories';
 import { useAuth } from '@/hooks/useAuth';
 import { useAddPortfolioItem } from '@/hooks/usePortfolio';
 
+import { t } from '@/i18n';
 export default function AddWorkScreen() {
   const { profile } = useAuth();
   const addItem = useAddPortfolioItem();
 
   return (
     <Screen edges={['bottom']}>
-      <AppText color="textSecondary">
-        Show customers a job you have finished. A clear photo of the result builds trust.
-      </AppText>
+      <AppText color="textSecondary">{t('addWork.intro')}</AppText>
       <PortfolioForm
-        submitLabel="Add to my past work"
+        submitLabel={t('addWork.submit')}
         defaultValues={{
           caption: '',
           // Most projects match the provider's main skill, so start with it selected.

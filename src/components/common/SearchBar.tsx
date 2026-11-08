@@ -5,6 +5,7 @@ import { colors, radius, spacing, typography } from '@/theme';
 
 import { AppText } from './AppText';
 
+import { t } from '@/i18n';
 interface SearchBarProps {
   value?: string;
   onChangeText?: (text: string) => void;
@@ -17,7 +18,7 @@ interface SearchBarProps {
 export function SearchBar({
   value,
   onChangeText,
-  placeholder = 'Search services or providers',
+  placeholder = t('search.barPlaceholder'),
   onPress,
   autoFocus,
 }: SearchBarProps) {
@@ -50,7 +51,7 @@ export function SearchBar({
           onPress={() => onChangeText?.('')}
           hitSlop={10}
           accessibilityRole="button"
-          accessibilityLabel="Clear search"
+          accessibilityLabel={t('a11y.clearSearch')}
         >
           <Ionicons name="close-circle" size={20} color={colors.textMuted} />
         </Pressable>

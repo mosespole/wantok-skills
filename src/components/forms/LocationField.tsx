@@ -6,6 +6,7 @@ import { useCurrentLocation } from '@/hooks/useLocation';
 import type { Coordinates } from '@/services/location/locationService';
 import { colors, radius, spacing } from '@/theme';
 
+import { t } from '@/i18n';
 interface LocationFieldProps {
   coords: Coordinates | null;
   /** Called with real device coordinates and, when available, a place name. */
@@ -28,9 +29,9 @@ export function LocationField({ coords, onLocated, onClear }: LocationFieldProps
   return (
     <View style={styles.wrapper}>
       <AppText variant="label" color="textSecondary">
-        Map position{' '}
+        {t('location.mapPosition')}{' '}
         <AppText variant="caption" color="textMuted">
-          (optional)
+          {t('common.optional')}
         </AppText>
       </AppText>
 
@@ -38,25 +39,28 @@ export function LocationField({ coords, onLocated, onClear }: LocationFieldProps
         <View style={styles.saved}>
           <Ionicons name="location" size={20} color={colors.success} />
           <AppText style={styles.savedText} variant="caption">
-            Pinned at {coords.latitude.toFixed(4)}, {coords.longitude.toFixed(4)}
+            {t('location.pinnedAt', {
+              lat: coords.latitude.toFixed(4),
+              lng: coords.longitude.toFixed(4),
+            })}
           </AppText>
           <Pressable
             onPress={onClear}
             hitSlop={10}
             accessibilityRole="button"
-            accessibilityLabel="Remove map position"
+            accessibilityLabel={t('location.remove')}
           >
             <Ionicons name="close-circle" size={22} color={colors.textMuted} />
           </Pressable>
         </View>
       ) : (
         <AppText variant="caption" color="textMuted">
-          Add your current location so customers can find you on the map.
+          {t('location.hint')}
         </AppText>
       )}
 
       <AppButton
-        title={coords ? 'Update to my current location' : 'Use my current location'}
+        title={coords ? t('location.update') : t('location.use')}
         icon="navigate-outline"
         variant="secondary"
         onPress={handlePress}
@@ -71,7 +75,7 @@ export function LocationField({ coords, onLocated, onClear }: LocationFieldProps
           {location.status === 'permission-denied' && !location.canAskAgain && (
             <Pressable onPress={location.openSettings} accessibilityRole="link">
               <AppText variant="label" color="primary">
-                Open Settings
+                {t('common.openSettings')}
               </AppText>
             </Pressable>
           )}

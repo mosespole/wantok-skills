@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { colors, radius } from '@/theme';
 
+import { t } from '@/i18n';
 interface BrandMarkProps {
   size?: number;
   /** White tile with a green icon, for use on the green header banners. */
@@ -18,7 +19,7 @@ export function BrandMark({ size = 72, inverted = false }: BrandMarkProps) {
         { width: size, height: size, borderRadius: size * 0.28 },
         inverted && styles.inverted,
       ]}
-      accessibilityLabel="Wantok Skills logo"
+      accessibilityLabel={t('a11y.logo')}
     >
       <Ionicons
         name="people"

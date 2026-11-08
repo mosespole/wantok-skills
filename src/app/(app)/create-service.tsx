@@ -7,6 +7,7 @@ import { useServiceImage } from '@/hooks/useServiceImage';
 import { useCreateService } from '@/hooks/useServices';
 import { toServiceInput } from '@/utils/validation';
 
+import { t } from '@/i18n';
 export default function CreateServiceScreen() {
   const { profile } = useAuth();
   const createService = useCreateService();
@@ -14,12 +15,10 @@ export default function CreateServiceScreen() {
 
   return (
     <Screen edges={['bottom']}>
-      <Stack.Screen options={{ title: 'New listing' }} />
-      <AppText color="textSecondary">
-        Tell customers what you offer. Required fields are checked before publishing.
-      </AppText>
+      <Stack.Screen options={{ title: t('screens.newListing') }} />
+      <AppText color="textSecondary">{t('createService.intro')}</AppText>
       <ServiceForm
-        submitLabel="Publish listing"
+        submitLabel={t('createService.submit')}
         uploadProgress={serviceImage.uploadProgress}
         // Pre-fill contact details from the provider's profile to save typing.
         defaultValues={{

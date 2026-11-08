@@ -5,6 +5,7 @@ import { colors, radius, shadows, spacing } from '@/theme';
 import { AppButton } from './AppButton';
 import { AppText } from './AppText';
 
+import { t } from '@/i18n';
 interface ConfirmDialogProps {
   visible: boolean;
   title: string;
@@ -23,8 +24,8 @@ export function ConfirmDialog({
   visible,
   title,
   message,
-  confirmLabel = 'Confirm',
-  cancelLabel = 'Cancel',
+  confirmLabel = t('common.confirm'),
+  cancelLabel = t('common.cancel'),
   destructive = false,
   loading = false,
   onConfirm,
@@ -43,7 +44,11 @@ export function ConfirmDialog({
       onRequestClose={handleCancel}
       statusBarTranslucent
     >
-      <Pressable style={styles.backdrop} onPress={handleCancel} accessibilityLabel="Close dialog">
+      <Pressable
+        style={styles.backdrop}
+        onPress={handleCancel}
+        accessibilityLabel={t('a11y.closeDialog')}
+      >
         {/* Inner Pressable stops taps on the dialog from closing it. */}
         <Pressable style={styles.dialog} onPress={() => undefined} accessibilityRole="alert">
           <AppText variant="subtitle">{title}</AppText>

@@ -13,6 +13,7 @@ import { colors, spacing } from '@/theme';
 import { getErrorMessage } from '@/utils/errors';
 import { forgotPasswordSchema, type ForgotPasswordFormValues } from '@/utils/validation';
 
+import { t } from '@/i18n';
 export default function ForgotPasswordScreen() {
   const { resetPassword } = useAuth();
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -42,14 +43,13 @@ export default function ForgotPasswordScreen() {
       <Screen edges={['bottom']} contentStyle={styles.centered}>
         <Ionicons name="mail-open-outline" size={56} color={colors.primary} />
         <AppText variant="title" align="center">
-          Check your email
+          {t('forgot.checkEmail')}
         </AppText>
         {/* Firebase does not reveal whether an account exists, so the wording stays neutral. */}
         <AppText color="textSecondary" align="center">
-          If an account exists for {sentTo}, we have sent a link to reset your password. Check your
-          spam folder if it does not arrive within a few minutes.
+          {t('forgot.sentMessage', { email: sentTo })}
         </AppText>
-        <AppButton title="Back to log in" onPress={() => router.back()} />
+        <AppButton title={t('forgot.backToLogin')} onPress={() => router.back()} />
       </Screen>
     );
   }
@@ -57,10 +57,8 @@ export default function ForgotPasswordScreen() {
   return (
     <Screen edges={['bottom']}>
       <View style={styles.header}>
-        <AppText variant="title">Reset your password</AppText>
-        <AppText color="textSecondary">
-          Enter the email you registered with and we will send you a reset link.
-        </AppText>
+        <AppText variant="title">{t('forgot.title')}</AppText>
+        <AppText color="textSecondary">{t('forgot.intro')}</AppText>
       </View>
 
       <FormError message={submitError} />
@@ -68,9 +66,9 @@ export default function ForgotPasswordScreen() {
       <FormInput
         control={control}
         name="email"
-        label="Email"
+        label={t('fields.email')}
         icon="mail-outline"
-        placeholder="you@example.com"
+        placeholder={t('placeholders.email')}
         keyboardType="email-address"
         autoCapitalize="none"
         autoComplete="email"
@@ -79,7 +77,7 @@ export default function ForgotPasswordScreen() {
         onSubmitEditing={onSubmit}
       />
 
-      <AppButton title="Send reset link" onPress={onSubmit} loading={isSubmitting} />
+      <AppButton title={t('forgot.submit')} onPress={onSubmit} loading={isSubmitting} />
     </Screen>
   );
 }

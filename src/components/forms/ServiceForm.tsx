@@ -14,6 +14,7 @@ import { FormInput } from './FormInput';
 import { LocationField } from './LocationField';
 import { ServiceImageField, type ImageChange } from './ServiceImageField';
 
+import { t } from '@/i18n';
 interface ServiceFormProps {
   defaultValues: DefaultValues<ServiceFormValues>;
   submitLabel: string;
@@ -72,8 +73,8 @@ export function ServiceForm({
       <FormInput
         control={control}
         name="title"
-        label="Service title"
-        placeholder="e.g. House wiring and repairs"
+        label={t('serviceForm.title')}
+        placeholder={t('serviceForm.titlePlaceholder')}
         maxLength={80}
       />
 
@@ -82,7 +83,7 @@ export function ServiceForm({
         name="category"
         render={({ field: { value, onChange }, fieldState: { error } }) => (
           <CategoryPicker
-            label="Category"
+            label={t('serviceForm.category')}
             value={value}
             onChange={onChange}
             error={error?.message}
@@ -100,8 +101,8 @@ export function ServiceForm({
       <FormInput
         control={control}
         name="description"
-        label="Description"
-        placeholder="What you offer, your experience, and when you are available"
+        label={t('serviceForm.description')}
+        placeholder={t('serviceForm.descriptionPlaceholder')}
         multiline
         maxLength={1000}
       />
@@ -109,9 +110,9 @@ export function ServiceForm({
       <FormInput
         control={control}
         name="locationName"
-        label="Location"
+        label={t('fields.location')}
         icon="location-outline"
-        placeholder="e.g. Eriku, Lae"
+        placeholder={t('placeholders.location')}
         maxLength={100}
       />
 
@@ -134,7 +135,7 @@ export function ServiceForm({
       <FormInput
         control={control}
         name="contactNumber"
-        label="Contact phone number"
+        label={t('serviceForm.contactNumber')}
         icon="call-outline"
         placeholder="7123 4567"
         keyboardType="phone-pad"
@@ -144,9 +145,9 @@ export function ServiceForm({
       <FormInput
         control={control}
         name="startingPrice"
-        label="Starting price (kina)"
+        label={t('serviceForm.price')}
         icon="pricetag-outline"
-        placeholder="e.g. 50"
+        placeholder={t('serviceForm.pricePlaceholder')}
         keyboardType="decimal-pad"
         optional
         maxLength={10}
@@ -159,9 +160,9 @@ export function ServiceForm({
           render={({ field: { value, onChange } }) => (
             <View style={styles.switchRow}>
               <View style={styles.switchText}>
-                <AppText variant="bodyStrong">Visible to customers</AppText>
+                <AppText variant="bodyStrong">{t('serviceForm.visible')}</AppText>
                 <AppText variant="caption" color="textSecondary">
-                  Turn off to pause this listing without deleting it.
+                  {t('serviceForm.visibleHint')}
                 </AppText>
               </View>
               <Switch
@@ -169,7 +170,7 @@ export function ServiceForm({
                 onValueChange={onChange}
                 trackColor={{ true: colors.primary, false: colors.border }}
                 thumbColor={colors.surface}
-                accessibilityLabel="Visible to customers"
+                accessibilityLabel={t('serviceForm.visible')}
               />
             </View>
           )}

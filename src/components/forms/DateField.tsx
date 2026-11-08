@@ -1,12 +1,13 @@
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
-import { format } from 'date-fns';
 import { useState } from 'react';
 import { Platform, Pressable, StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/common';
 import { colors, radius, spacing } from '@/theme';
 
+import { t, tMessage } from '@/i18n';
+import { formatDate } from '@/utils/formatting';
 interface DateFieldProps {
   label: string;
   value: Date | undefined;
@@ -44,11 +45,11 @@ export function DateField({ label, value, onChange, error, maximumDate }: DateFi
         onPress={open}
         style={[styles.field, { borderColor: error ? colors.error : colors.border }]}
         accessibilityRole="button"
-        accessibilityLabel={`${label}: ${value ? format(value, 'd MMMM yyyy') : 'not set'}`}
+        accessibilityLabel={`${label}: ${value ? formatDate(value) : t('dateField.notSet')}`}
       >
         <Ionicons name="calendar-outline" size={20} color={colors.textMuted} />
         <AppText color={value ? 'textPrimary' : 'textMuted'} style={styles.value}>
-          {value ? format(value, 'd MMMM yyyy') : 'Choose a date'}
+          {value ? formatDate(value) : t('dateField.choose')}
         </AppText>
       </Pressable>
       {Platform.OS === 'ios' && showIosPicker && (
@@ -64,7 +65,7 @@ export function DateField({ label, value, onChange, error, maximumDate }: DateFi
       )}
       {error ? (
         <AppText variant="caption" color="error">
-          {error}
+          {tMessage(error)}
         </AppText>
       ) : null}
     </View>

@@ -10,6 +10,7 @@ import { formatRelativeDate } from '@/utils/formatting';
 import { ReviewForm } from './ReviewForm';
 import { StarRating } from './StarRating';
 
+import { t, tCount } from '@/i18n';
 interface ReviewsSectionProps {
   providerId: string;
   providerName: string;
@@ -31,7 +32,7 @@ export function ReviewsSection({ providerId, providerName }: ReviewsSectionProps
 
   return (
     <View style={styles.section}>
-      <SectionHeader title="Reviews" />
+      <SectionHeader title={t('reviews.title')} />
 
       {summary && summary.count > 0 && summary.average !== null ? (
         <View style={styles.summary}>
@@ -39,23 +40,21 @@ export function ReviewsSection({ providerId, providerName }: ReviewsSectionProps
           <View style={styles.summaryText}>
             <StarRating value={summary.average} size={20} />
             <AppText variant="caption" color="textSecondary">
-              Based on {summary.count} {summary.count === 1 ? 'review' : 'reviews'}
+              {tCount('reviews.basedOn', summary.count)}
             </AppText>
           </View>
         </View>
       ) : (
         summaryQuery.isSuccess && (
           <AppText color="textSecondary">
-            {canReview
-              ? 'No reviews yet. Be the first to share your experience.'
-              : 'No reviews yet.'}
+            {canReview ? t('reviews.emptyInvite') : t('reviews.empty')}
           </AppText>
         )
       )}
 
       {canReview &&
         (myReviewQuery.isLoading ? (
-          <LoadingState message="Loading your review..." />
+          <LoadingState message={t('reviews.loadingMine')} />
         ) : (
           // No key: remounting after the first save would hide the "review saved" message.
           // ReviewForm clears its own fields when the review is deleted.
@@ -67,7 +66,7 @@ export function ReviewsSection({ providerId, providerName }: ReviewsSectionProps
         ))}
 
       {reviewsQuery.isLoading ? (
-        <LoadingState message="Loading reviews..." />
+        <LoadingState message={t('reviews.loading')} />
       ) : reviewsQuery.isError ? (
         <ErrorState
           message={getErrorMessage(reviewsQuery.error)}

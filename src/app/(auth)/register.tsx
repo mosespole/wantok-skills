@@ -13,6 +13,7 @@ import { spacing } from '@/theme';
 import { getErrorMessage } from '@/utils/errors';
 import { registerSchema, type RegisterFormValues } from '@/utils/validation';
 
+import { t } from '@/i18n';
 export default function RegisterScreen() {
   const { register } = useAuth();
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -45,10 +46,8 @@ export default function RegisterScreen() {
   return (
     <Screen edges={['bottom']}>
       <View style={styles.header}>
-        <AppText variant="title">Create your account</AppText>
-        <AppText color="textSecondary">
-          Join your wantoks to find help or offer your skills.
-        </AppText>
+        <AppText variant="title">{t('register.title')}</AppText>
+        <AppText color="textSecondary">{t('register.intro')}</AppText>
       </View>
 
       <FormError message={submitError} />
@@ -64,9 +63,9 @@ export default function RegisterScreen() {
       <FormInput
         control={control}
         name="fullName"
-        label="Full name"
+        label={t('fields.fullName')}
         icon="person-outline"
-        placeholder="e.g. Kila Wari"
+        placeholder={t('placeholders.name')}
         autoCapitalize="words"
         autoComplete="name"
         textContentType="name"
@@ -75,9 +74,9 @@ export default function RegisterScreen() {
       <FormInput
         control={control}
         name="email"
-        label="Email"
+        label={t('fields.email')}
         icon="mail-outline"
-        placeholder="you@example.com"
+        placeholder={t('placeholders.email')}
         keyboardType="email-address"
         autoCapitalize="none"
         autoComplete="email"
@@ -86,7 +85,7 @@ export default function RegisterScreen() {
       <FormInput
         control={control}
         name="phoneNumber"
-        label="Phone number"
+        label={t('fields.phoneNumber')}
         icon="call-outline"
         placeholder="7123 4567"
         keyboardType="phone-pad"
@@ -97,9 +96,9 @@ export default function RegisterScreen() {
       <FormInput
         control={control}
         name="password"
-        label="Password"
+        label={t('fields.password')}
         icon="lock-closed-outline"
-        placeholder="At least 8 characters, with a number"
+        placeholder={t('register.passwordPlaceholder')}
         secureToggle
         autoCapitalize="none"
         autoComplete="new-password"
@@ -108,9 +107,9 @@ export default function RegisterScreen() {
       <FormInput
         control={control}
         name="confirmPassword"
-        label="Confirm password"
+        label={t('fields.confirmPassword')}
         icon="lock-closed-outline"
-        placeholder="Re-enter your password"
+        placeholder={t('register.confirmPlaceholder')}
         secureToggle
         autoCapitalize="none"
         autoComplete="new-password"
@@ -119,13 +118,13 @@ export default function RegisterScreen() {
         onSubmitEditing={onSubmit}
       />
 
-      <AppButton title="Create account" onPress={onSubmit} loading={isSubmitting} />
+      <AppButton title={t('register.submit')} onPress={onSubmit} loading={isSubmitting} />
 
       <View style={styles.footer}>
-        <AppText color="textSecondary">Already have an account?</AppText>
+        <AppText color="textSecondary">{t('register.haveAccount')}</AppText>
         <Link href="/login" replace>
           <AppText variant="bodyStrong" color="primary">
-            Log in
+            {t('auth.login')}
           </AppText>
         </Link>
       </View>

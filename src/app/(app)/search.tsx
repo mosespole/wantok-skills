@@ -14,6 +14,7 @@ import { useActiveServices } from '@/hooks/useServices';
 import { colors, radius, spacing, typography } from '@/theme';
 import { filterProviders, filterServices } from '@/utils/search';
 
+import { t, tCount } from '@/i18n';
 const MAX_PROVIDER_RESULTS = 10;
 
 /**
@@ -60,7 +61,7 @@ export default function SearchScreen() {
         <SearchBar
           value={text}
           onChangeText={setText}
-          placeholder="Plumber, tutoring, a name..."
+          placeholder={t('search.placeholder')}
           autoFocus
         />
         <View style={styles.locationField}>
@@ -69,10 +70,10 @@ export default function SearchScreen() {
             style={styles.locationInput}
             value={location}
             onChangeText={setLocation}
-            placeholder="Any location (e.g. Lae, Goroka)"
+            placeholder={t('search.locationPlaceholder')}
             placeholderTextColor={colors.textMuted}
             autoCorrect={false}
-            accessibilityLabel="Filter by location"
+            accessibilityLabel={t('search.locationLabel')}
           />
         </View>
       </View>
@@ -87,7 +88,7 @@ export default function SearchScreen() {
           <View style={styles.header}>
             {matchingProviders.length > 0 && (
               <View style={styles.providers}>
-                <AppText variant="subtitle">Providers</AppText>
+                <AppText variant="subtitle">{t('search.providers')}</AppText>
                 {matchingProviders.map((provider) => (
                   <ProviderCard key={provider.uid} provider={provider} />
                 ))}
@@ -95,17 +96,13 @@ export default function SearchScreen() {
             )}
             {servicesQuery.isSuccess && (
               <AppText variant="caption" color="textSecondary">
-                {results.length} {results.length === 1 ? 'service' : 'services'}
+                {tCount('common.services', results.length)}
               </AppText>
             )}
           </View>
         }
-        emptyTitle={hasFilters ? 'No matching services' : 'No services yet'}
-        emptyMessage={
-          hasFilters
-            ? 'Try different words, another location, or clear the category filter.'
-            : 'Check back soon.'
-        }
+        emptyTitle={hasFilters ? t('search.noMatches') : t('services.emptyTitle')}
+        emptyMessage={hasFilters ? t('search.noMatchesMessage') : t('services.checkBackSoon')}
       />
     </View>
   );

@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useFavourites } from '@/hooks/useFavourites';
 import { colors } from '@/theme';
 
+import { t } from '@/i18n';
 interface FavouriteButtonProps {
   providerId: string;
   providerName: string;
@@ -30,7 +31,9 @@ export function FavouriteButton({ providerId, providerName, size = 24 }: Favouri
       accessibilityRole="button"
       accessibilityState={{ selected: saved }}
       accessibilityLabel={
-        saved ? `Remove ${providerName} from favourites` : `Save ${providerName} to favourites`
+        saved
+          ? t('favourites.remove', { name: providerName })
+          : t('favourites.save', { name: providerName })
       }
     >
       <Ionicons

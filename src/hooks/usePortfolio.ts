@@ -40,7 +40,7 @@ export function useAddPortfolioItem() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (input: PortfolioInput) => {
-      if (!user) throw new Error('You must be logged in to add past work.');
+      if (!user) throw new Error('errors.loginToAddWork');
       await ensureOnline();
       return addPortfolioItem(user.uid, input);
     },

@@ -17,6 +17,7 @@ import { useMyServices } from '@/hooks/useServices';
 import { colors, spacing } from '@/theme';
 import { getErrorMessage } from '@/utils/errors';
 
+import { t, tCount } from '@/i18n';
 export default function MyServicesScreen() {
   const servicesQuery = useMyServices();
   const deleteFlow = useDeleteListingFlow();
@@ -25,7 +26,7 @@ export default function MyServicesScreen() {
 
   let body;
   if (servicesQuery.isLoading) {
-    body = <LoadingState message="Loading your listings..." />;
+    body = <LoadingState message={t('myServices.loading')} />;
   } else if (servicesQuery.isError) {
     body = (
       <ErrorState
@@ -52,9 +53,9 @@ export default function MyServicesScreen() {
         ListEmptyComponent={
           <EmptyState
             icon="briefcase-outline"
-            title="No listings yet"
-            message="Create your first listing so customers can find and contact you."
-            actionLabel="Create a listing"
+            title={t('myServices.emptyTitle')}
+            message={t('myServices.emptyMessage')}
+            actionLabel={t('common.createListing')}
             onAction={goToCreate}
           />
         }
@@ -80,14 +81,14 @@ export default function MyServicesScreen() {
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
         <View style={styles.headerText}>
-          <AppText variant="title">My services</AppText>
+          <AppText variant="title">{t('tabs.myServices')}</AppText>
           {servicesQuery.isSuccess && (
             <AppText variant="caption" color="textSecondary">
-              {count} {count === 1 ? 'listing' : 'listings'}
+              {tCount('common.listings', count)}
             </AppText>
           )}
         </View>
-        <AppButton title="New" icon="add" onPress={goToCreate} fullWidth={false} />
+        <AppButton title={t('myServices.new')} icon="add" onPress={goToCreate} fullWidth={false} />
       </View>
 
       {deleteFlow.error && (
@@ -100,9 +101,9 @@ export default function MyServicesScreen() {
 
       <ConfirmDialog
         visible={deleteFlow.target !== null}
-        title="Delete listing?"
-        message={`"${deleteFlow.target?.title ?? ''}" will be permanently removed. This cannot be undone.`}
-        confirmLabel="Delete"
+        title={t('listing.deleteTitle')}
+        message={t('listing.deleteMessage', { title: deleteFlow.target?.title ?? '' })}
+        confirmLabel={t('common.delete')}
         destructive
         loading={deleteFlow.isDeleting}
         onConfirm={deleteFlow.confirmDelete}
