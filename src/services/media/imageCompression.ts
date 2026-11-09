@@ -19,7 +19,9 @@ const DATA_URI_PREFIX = 'data:image/jpeg;base64,';
 
 async function encode(uri: string, width: number, quality: number): Promise<string> {
   const context = ImageManipulator.manipulate(uri);
-  context.resize({ width, height: null });
+  // Pass only the width (height follows the aspect ratio). On web, `height: null` is
+  // treated as 0, which makes an empty image and Safari throws "index not in range".
+  context.resize({ width });
   const image = await context.renderAsync();
   const result = await image.saveAsync({
     base64: true,
