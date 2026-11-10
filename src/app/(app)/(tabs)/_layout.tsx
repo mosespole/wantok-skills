@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import type { ComponentProps } from 'react';
 import { StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAuth } from '@/hooks/useAuth';
 import { colors, fonts, radius, shadows } from '@/theme';
@@ -22,6 +23,9 @@ function tabIcon(name: IconName, focusedName: IconName) {
   return TabIcon;
 }
 
+/** Pill icon (30) + label (about 16) + top and bottom padding. */
+const TAB_BAR_CONTENT_HEIGHT = 74;
+
 const styles = StyleSheet.create({
   iconPill: {
     width: 56,
@@ -38,12 +42,17 @@ const styles = StyleSheet.create({
     ...shadows.raised,
   },
   label: { fontFamily: fonts.semibold, fontSize: 11, marginTop: 2 },
+  tabItem: { paddingVertical: 2 },
 });
 
 /** Bottom tabs. The first tab is the customer Home or the provider Dashboard. */
 export default function TabsLayout() {
   const { profile } = useAuth();
   const isProvider = profile?.role === 'provider';
+  // Fixed height (pill icon + label) plus the phone's bottom safe area, so the labels are
+  // never pushed out of view. The default height is too short for the pill icons on web.
+  const insets = useSafeAreaInsets();
+  const tabBarHeight = TAB_BAR_CONTENT_HEIGHT + insets.bottom;
 
   return (
     <Tabs
@@ -51,7 +60,8 @@ export default function TabsLayout() {
         headerShown: false,
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textMuted,
-        tabBarStyle: styles.tabBar,
+        tabBarStyle: [styles.tabBar, { height: tabBarHeight, paddingBottom: insets.bottom + 10 }],
+        tabBarItemStyle: styles.tabItem,
         tabBarLabelStyle: styles.label,
       }}
     >
