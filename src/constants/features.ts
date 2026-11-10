@@ -11,10 +11,12 @@ export const STORAGE_ENABLED = process.env.EXPO_PUBLIC_FIREBASE_STORAGE_ENABLED 
 
 /**
  * Whether the native map can be shown. A compiled Android build without a Google Maps
- * API key crashes as soon as the map opens, so the Map tab shows a provider list instead.
- * Expo Go needs no key, iOS uses Apple Maps, and the web build has its own fallback.
+ * API key crashes as soon as the map opens, and the browser has no native map, so in both
+ * cases the Map tab shows the same list of providers sorted by distance instead.
+ * Expo Go needs no key and a native iOS build uses Apple Maps.
  */
 export const NATIVE_MAP_AVAILABLE =
-  Platform.OS !== 'android' ||
-  Constants.executionEnvironment === ExecutionEnvironment.StoreClient ||
-  Constants.expoConfig?.extra?.googleMapsEnabled === true;
+  Platform.OS === 'ios' ||
+  (Platform.OS === 'android' &&
+    Constants.executionEnvironment === ExecutionEnvironment.StoreClient) ||
+  (Platform.OS === 'android' && Constants.expoConfig?.extra?.googleMapsEnabled === true);

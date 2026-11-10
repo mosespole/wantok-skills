@@ -275,7 +275,7 @@ export const en = {
   'register.haveAccount': 'Already have an account?',
   'register.intro': 'Join your wantoks to find help or offer your skills.',
   'register.joinAs': 'I want to join as a',
-  'register.passwordPlaceholder': 'At least 8 characters, with a number',
+  'register.passwordPlaceholder': '8+ characters, with a number',
   'register.submit': 'Create account',
   'register.title': 'Create your account',
   'reviews.basedOn.one': 'Based on {count} review',
